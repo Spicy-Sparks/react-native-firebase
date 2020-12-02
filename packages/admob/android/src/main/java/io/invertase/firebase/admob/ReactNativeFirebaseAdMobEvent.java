@@ -25,6 +25,7 @@ import io.invertase.firebase.interfaces.NativeEvent;
 public class ReactNativeFirebaseAdMobEvent implements NativeEvent {
   public static final String EVENT_INTERSTITIAL = "admob_interstitial_event";
   public static final String EVENT_REWARDED = "admob_rewarded_event";
+  public static final String EVENT_APPOPEN = "admob_appopen_event";
 
   public static final String AD_LOADED = "loaded";
   public static final String AD_ERROR= "error";

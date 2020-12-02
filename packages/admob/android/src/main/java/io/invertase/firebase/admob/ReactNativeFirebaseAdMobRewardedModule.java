@@ -11,6 +11,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -72,12 +74,12 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
         }
 
         @Override
-        public void onRewardedAdFailedToLoad(int errorCode) {
-          WritableMap error = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(errorCode);
-          error.putString("code", codeAndMessage[0]);
-          error.putString("message", codeAndMessage[1]);
-          sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
+        public void onRewardedAdFailedToLoad(LoadAdError error) {
+          WritableMap errorMap = Arguments.createMap();
+          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
+          errorMap.putString("code", codeAndMessage[0]);
+          errorMap.putString("message", codeAndMessage[1]);
+          sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
         }
       };
 
@@ -139,12 +141,12 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
         }
 
         @Override
-        public void onRewardedAdFailedToShow(int errorCode) {
-          WritableMap error = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(errorCode);
-          error.putString("code", codeAndMessage[0]);
-          error.putString("message", codeAndMessage[1]);
-          sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
+        public void onRewardedAdFailedToShow(AdError error) {
+          WritableMap errorMap = Arguments.createMap();
+          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
+          errorMap.putString("code", codeAndMessage[0]);
+          errorMap.putString("message", codeAndMessage[1]);
+          sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
         }
       };
 

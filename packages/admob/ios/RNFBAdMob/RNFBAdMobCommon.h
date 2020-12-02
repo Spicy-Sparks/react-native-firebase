@@ -23,13 +23,13 @@
 
 + (GADRequest *)buildAdRequest:(NSDictionary *)adRequestOptions;
 
-+ (NSDictionary *)getCodeAndMessageFromAdError:(GADRequestError *)error;
++ (NSDictionary *)getCodeAndMessageFromAdError:(NSError *)error;
 
-+ (void)sendAdEvent:(NSString *)event
++ (void)sendAdEvent:(NSString *)adType
+          type:(NSString *)type
           requestId:(NSNumber *)requestId
-               type:(NSString *)type
-           adUnitId:(NSString *)adUnitId
-              error:(nullable NSDictionary *)error
+          adUnitId:(NSString *)adUnitId
+          error:(nullable NSDictionary *)error
                data:(nullable NSDictionary *)data;
 
 + (GADAdSize)stringToAdSize:(NSString *)value;

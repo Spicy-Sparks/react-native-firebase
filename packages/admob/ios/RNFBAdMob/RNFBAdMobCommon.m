@@ -109,7 +109,7 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
     return request;
 }
 
-+ (NSDictionary *)getCodeAndMessageFromAdError:(GADRequestError *)error {
++ (NSDictionary *)getCodeAndMessageFromAdError:(NSError *)error {
     NSString *code = @"unknown";
     NSString *message = @"An unknown error occurred.";
 
@@ -133,12 +133,12 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
     };
 }
 
-+ (void)sendAdEvent:(NSString *)event
++ (void)sendAdEvent:(NSString *)adType
+          type:(NSString *)type
           requestId:(NSNumber *)requestId
-               type:(NSString *)type
-           adUnitId:(NSString *)adUnitId
-              error:(nullable NSDictionary *)error
-               data:(nullable NSDictionary *)data {
+          adUnitId:(NSString *)adUnitId
+          error:(nullable NSDictionary *)error
+          data:(nullable NSDictionary *)data {
     NSMutableDictionary *body = [@{
             @"type": type,
     } mutableCopy];
@@ -158,7 +158,7 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
             @"body": body,
     } mutableCopy];
 
-    [[RNFBRCTEventEmitter shared] sendEventWithName:event body:payload];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:adType body:payload];
 }
 
 + (GADAdSize)stringToAdSize:(NSString *)value {

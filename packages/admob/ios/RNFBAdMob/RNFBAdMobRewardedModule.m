@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(rewardedLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-
+    
     [GADRewardedAdBeta loadWithAdUnitID:adUnitId
                              request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                    completionHandler:^(GADRewardedAdBeta *_Nullable ad, NSError *_Nullable error) {
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(rewardedLoad
                          } mutableCopy]];
                        return;
                      }
-
+        
                     NSDictionary *serverSideVerificationOptions = [adRequestOptions objectForKey:@"serverSideVerificationOptions"];
 
                     if (serverSideVerificationOptions != nil) {
@@ -104,20 +104,19 @@ RCT_EXPORT_METHOD(rewardedLoad
 
                       [ad setServerSideVerificationOptions:options];
                     }
-
-
-                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate sharedInstance];
-
+        
+                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate initWithParams:requestId adUnitId:adUnitId];
+        
                      RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
 
                      [RNFBAdMobFullScreenContentAd setRequestId:requestId];
                      [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
                      [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
-
+          
                      rewardedMap[requestId] = RNFBAdMobFullScreenContentAd;
-
-                     [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:nil];
-
+          
+                    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_REWARDED type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
+          
                      resolve([NSNull null]);
                    }];
 }
@@ -133,7 +132,7 @@ RCT_EXPORT_METHOD(rewardedShow
 ) {
    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = rewardedMap[requestId];
    if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
-     [(GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController
+     [(GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController
          userDidEarnRewardHandler:^ {
             GADAdReward *reward = ((GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd).adReward;
             resolve(@{@"amount":reward.amount,@"type":reward.type});
@@ -148,3 +147,4 @@ RCT_EXPORT_METHOD(rewardedShow
 }
 
 @end
+

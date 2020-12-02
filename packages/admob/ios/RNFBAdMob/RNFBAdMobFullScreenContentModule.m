@@ -24,7 +24,6 @@
 #import "RNFBAdMobFullScreenContentDelegate.h"
 
 static __strong NSMutableDictionary *appOpenMap;
-static __strong NSDate *loadTime;
 
 @implementation RNFBAdMobFullScreenContentModule
 #pragma mark -
@@ -59,7 +58,10 @@ RCT_EXPORT_MODULE();
   }
 }
 
-- (BOOL)wasLoadTimeLessThanNHoursAgo:(int)n {
+- (BOOL)wasLoadTimeLessThanNHoursAgo:(nonnull
+                                      NSDate *)loadTime
+                                    : (int)n
+  {
   NSDate *now = [NSDate date];
   NSTimeInterval timeIntervalBetweenNowAndLoadTime = [now timeIntervalSinceDate:loadTime];
   double secondsPerHour = 3600.0;
@@ -79,10 +81,10 @@ RCT_EXPORT_METHOD(appOpenLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-      [RNFBGADAppOpen loadWithAdUnitID:adUnitId
-                             request:[GADRequest request]
+      [GADAppOpenAd loadWithAdUnitID:adUnitId
+                             request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                          orientation:UIInterfaceOrientationPortrait
-                   completionHandler:^(GADAppOpenAd *_Nullable appOpenAd, NSError *_Nullable error) {
+                   completionHandler:^(GADAppOpenAd *_Nullable ad, NSError *_Nullable error) {
                      if (error) {
                          [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
                              @"code": @"not-loaded",
@@ -90,10 +92,19 @@ RCT_EXPORT_METHOD(appOpenLoad
                          } mutableCopy]];
                        return;
                      }
-                     appOpenAd.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate sharedInstance];
           
-                     appOpenMap[requestId] = appOpenAd;
-                     loadTime = [NSDate date];
+                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate initWithParams:requestId adUnitId:adUnitId];
+          
+                     RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
+  
+                     [RNFBAdMobFullScreenContentAd setRequestId:requestId];
+                     [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
+                     [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+          
+                     appOpenMap[requestId] = RNFBAdMobFullScreenContentAd;
+          
+                    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_APPOPEN type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
+          
                      resolve([NSNull null]);
                    }];
 }
@@ -106,9 +117,9 @@ RCT_EXPORT_METHOD(appOpenShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  GADAppOpenAd *appOpen = appOpenMap[requestId];
-    if (appOpen && [self wasLoadTimeLessThanNHoursAgo:4]) {
-    [appOpen presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController];
+    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = appOpenMap[requestId];
+    if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd && [self wasLoadTimeLessThanNHoursAgo:RNFBAdMobFullScreenContentAd.loadTime:4]) {
+    [(GADAppOpenAd*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
     resolve([NSNull null]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{

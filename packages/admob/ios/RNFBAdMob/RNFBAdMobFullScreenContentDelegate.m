@@ -20,6 +20,19 @@
 
 @implementation RNFBAdMobFullScreenContentDelegate
 
++ (instancetype)initWithParams:(NSNumber *)requestId
+              adUnitId:(NSString *)adUnitId{
+    static RNFBAdMobFullScreenContentDelegate *instance;
+    instance = [[RNFBAdMobFullScreenContentDelegate alloc] init];
+    if (instance) {
+        instance.requestId = requestId;
+        instance.adUnitId = adUnitId;
+        instance.dummy = adUnitId;
+    }
+    
+    return instance;
+}
+
 + (instancetype)sharedInstance {
   static dispatch_once_t once;
   static RNFBAdMobFullScreenContentDelegate *sharedInstance;
@@ -32,29 +45,42 @@
 #pragma mark -
 #pragma mark Helper Methods
 
-+ (void)sendFullScreenContentEvent:(NSString *)type
++ (void)sendFullScreenContentEvent:(NSString *)adType
+                              type:(NSString *)type
+                              requestId:(NSNumber *)requestId
+                              adUnitId:(NSString *)adUnitId
                         error:(nullable NSDictionary *)error {
-  [RNFBAdMobCommon sendAdEvent:EVENT_APPOPEN requestId:[NSNumber numberWithInt:0]  type:type adUnitId:@"" error:error data:nil];
+    [RNFBAdMobCommon sendAdEvent:adType type:type requestId:requestId adUnitId:adUnitId error:error data:nil];
+}
+
+- (NSString*)adTypeFromAd:(id) ad
+{
+    if([ad isKindOfClass:[GADInterstitialAdBeta class]])
+        return EVENT_INTERSTITIAL;
+    if([ad isKindOfClass:[GADRewardedAdBeta class]])
+        return EVENT_REWARDED;
+    
+    return EVENT_APPOPEN;
 }
 
 
 #pragma mark -
 #pragma mark GADFullScreenContentDelegate Methods
 
-- (void)ad:(id)ad didFailToPresentFullScreenContentWithError:(NSError *)error {
+- (void)ad:(nonnull id<GADFullScreenPresentingAd>)ad didFailToPresentFullScreenContentWithError:(NSError *)error{
     NSDictionary *codeAndMessage = [RNFBAdMobCommon getCodeAndMessageFromAdError:error];
-    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:codeAndMessage];
-
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:[self adTypeFromAd:ad] type:ADMOB_EVENT_ERROR requestId:_requestId adUnitId:_adUnitId error:codeAndMessage];
 }
 
 /// Tells the delegate that the ad presented full screen content.
-- (void)adDidPresentFullScreenContent:(id)ad {
-    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_OPENED error:nil];
+- (void)adDidPresentFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad {
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:[self adTypeFromAd:ad] type:ADMOB_EVENT_OPENED requestId:_requestId adUnitId:_adUnitId error:nil];
 }
 
 /// Tells the delegate that the ad dismissed full screen content.
-- (void)adDidDismissFullScreenContent:(id)ad {
-    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_CLOSED error:nil];
+- (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad {
+    self.dummy = nil;
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:[self adTypeFromAd:ad] type:ADMOB_EVENT_CLOSED requestId:_requestId adUnitId:_adUnitId error:nil];
 }
 
 

@@ -27,6 +27,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 
 import javax.annotation.Nullable;
 
@@ -84,12 +85,12 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
         }
 
         @Override
-        public void onAdFailedToLoad(int errorCode) {
-          WritableMap error = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(errorCode);
-          error.putString("code", codeAndMessage[0]);
-          error.putString("message", codeAndMessage[1]);
-          sendInterstitialEvent(AD_ERROR, requestId, adUnitId, error);
+        public void onAdFailedToLoad(LoadAdError error) {
+          WritableMap errorMap = Arguments.createMap();
+          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
+          errorMap.putString("code", codeAndMessage[0]);
+          errorMap.putString("message", codeAndMessage[1]);
+          sendInterstitialEvent(AD_ERROR, requestId, adUnitId, errorMap);
         }
 
         @Override

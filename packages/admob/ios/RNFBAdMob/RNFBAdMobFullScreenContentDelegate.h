@@ -25,8 +25,19 @@
 @interface RNFBAdMobFullScreenContentDelegate : NSObject <GADFullScreenContentDelegate>
 
 + (_Nonnull instancetype)sharedInstance;
+@property (strong, nonatomic) NSNumber *requestId;
+@property (strong, nonatomic) NSString *adUnitId;
+@property (strong, nonatomic) NSString *dummy;
 
-+ (void)sendFullScreenContentEvent:(NSString *)type
++ (instancetype)initWithParams:(NSNumber *)requestId
+                      adUnitId:(NSString *)adUnitId;
+
+
++ (void)sendFullScreenContentEvent:
+                              (NSString *)adType
+                              type:(NSString *)type
+                              requestId:(NSNumber *)requestId
+                              adUnitId:(NSString *)adUnitId
                         error:(nullable NSDictionary *)error;
 
 @end

@@ -64,12 +64,14 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
 
     public AppOpenAd _appOpenAd;
     public int _requestId;
+    public String _adUnitId;
     public long _loadTime;
 
-    public RNFBGADAppOpenAd(AppOpenAd appOpenAd, int requestId, long loadTime)
+    public RNFBGADAppOpenAd(AppOpenAd appOpenAd, int requestId, String adUnitId, long loadTime)
     {
       this._appOpenAd = appOpenAd;
       this._requestId = requestId;
+      this._adUnitId = adUnitId;
       this._loadTime = loadTime;
     }
   }
@@ -114,7 +116,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
          */
         @Override
         public void onAppOpenAdLoaded(AppOpenAd ad) {
-          RNFBGADAppOpenAd RNFBGADAppOpenAd = new RNFBGADAppOpenAd(ad, requestId, (new Date()).getTime());
+          RNFBGADAppOpenAd RNFBGADAppOpenAd = new RNFBGADAppOpenAd(ad, requestId, adUnitId, (new Date()).getTime());
           appOpenAdArray.put(requestId, RNFBGADAppOpenAd);
           sendAppOpenEvent(AD_LOADED, requestId, adUnitId, null);
         }
@@ -154,7 +156,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
         new FullScreenContentCallback() {
           @Override
           public void onAdDismissedFullScreenContent() {
-            sendAppOpenEvent(AD_CLOSED, requestId, null, null);
+            sendAppOpenEvent(AD_CLOSED, requestId, RNFBGADAppOpenAd._adUnitId, null);
           }
 
           @Override
@@ -163,12 +165,12 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
             String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(adError.getCode());
             error.putString("code", codeAndMessage[0]);
             error.putString("message", codeAndMessage[1]);
-            sendAppOpenEvent(AD_ERROR, requestId, null, error);
+            sendAppOpenEvent(AD_ERROR, requestId, RNFBGADAppOpenAd._adUnitId, error);
           }
 
           @Override
           public void onAdShowedFullScreenContent() {
-            sendAppOpenEvent(AD_OPENED, requestId, null, null);
+            sendAppOpenEvent(AD_OPENED, requestId, RNFBGADAppOpenAd._adUnitId, null);
           }
         };
 

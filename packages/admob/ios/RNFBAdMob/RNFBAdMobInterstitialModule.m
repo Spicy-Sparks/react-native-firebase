@@ -78,23 +78,24 @@ RCT_EXPORT_METHOD(interstitialLoad
                    if (error) {
                        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
                            @"code": @"not-loaded",
-                           @"message": @"Failed to load app open ad",
+                           @"message": @"Failed to load interstitial ad",
                        } mutableCopy]];
                      return;
                    }
 
-                   ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate sharedInstance];
-
+                  ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate
+                                     initWithParams:requestId adUnitId:adUnitId];
+                   
                    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
 
                    [RNFBAdMobFullScreenContentAd setRequestId:requestId];
                    [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
                    [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
-
+        
                    interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
-
-                   [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:nil];
-
+        
+                   [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_INTERSTITIAL type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
+        
                    resolve([NSNull null]);
                  }];
 }
@@ -109,7 +110,7 @@ RCT_EXPORT_METHOD(interstitialShow
 ) {
   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = interstitialMap[requestId];
   if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
-    [(GADInterstitialAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController];
+    [(GADInterstitialAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
     resolve([NSNull null]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
