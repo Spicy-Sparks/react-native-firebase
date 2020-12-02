@@ -21,7 +21,7 @@
 #import "RNFBAdMobInterstitialModule.h"
 #import "RNFBAdMobCommon.h"
 #import "RNFBSharedUtils.h"
-#import "RNFBAdMobInterstitialDelegate.h"
+#import "RNFBAdMobFullScreenContentDelegate.h"
 
 static __strong NSMutableDictionary *interstitialMap;
 
@@ -69,12 +69,34 @@ RCT_EXPORT_METHOD(interstitialLoad
     NSNumber *)requestId
     :(NSString *)adUnitId
     :(NSDictionary *)adRequestOptions
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
 ) {
-  RNFBGADInterstitial *interstitial = [[RNFBGADInterstitial alloc] initWithAdUnitID:adUnitId];
-  [interstitial setRequestId:requestId];
-  [interstitial loadRequest:[RNFBAdMobCommon buildAdRequest:adRequestOptions]];
-  interstitial.delegate = [RNFBAdMobInterstitialDelegate sharedInstance];
-  interstitialMap[requestId] = interstitial;
+  [GADInterstitialAdBeta loadWithAdUnitID:adUnitId
+                           request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
+                 completionHandler:^(GADInterstitialAdBeta *_Nullable ad, NSError *_Nullable error) {
+                   if (error) {
+                       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+                           @"code": @"not-loaded",
+                           @"message": @"Failed to load app open ad",
+                       } mutableCopy]];
+                     return;
+                   }
+
+                   ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate sharedInstance];
+
+                   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
+
+                   [RNFBAdMobFullScreenContentAd setRequestId:requestId];
+                   [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
+                   [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+
+                   interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
+
+                   [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:nil];
+
+                   resolve([NSNull null]);
+                 }];
 }
 
 RCT_EXPORT_METHOD(interstitialShow
@@ -85,9 +107,9 @@ RCT_EXPORT_METHOD(interstitialShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  GADInterstitial *interstitial = interstitialMap[requestId];
-  if (interstitial.isReady) {
-    [interstitial presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController];
+  RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = interstitialMap[requestId];
+  if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
+    [(GADInterstitialAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController];
     resolve([NSNull null]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{

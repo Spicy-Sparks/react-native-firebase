@@ -32,7 +32,7 @@
 #pragma mark -
 #pragma mark Helper Methods
 
-+ (void)sendAppOpenEvent:(NSString *)type
++ (void)sendFullScreenContentEvent:(NSString *)type
                         error:(nullable NSDictionary *)error {
   [RNFBAdMobCommon sendAdEvent:EVENT_APPOPEN requestId:[NSNumber numberWithInt:0]  type:type adUnitId:@"" error:error data:nil];
 }
@@ -41,21 +41,20 @@
 #pragma mark -
 #pragma mark GADFullScreenContentDelegate Methods
 
-- (void)ad:(nonnull id<GADFullScreenPresentingAd>)ad
-    didFailToPresentFullScreenContentWithError:(nonnull NSError *)error {
+- (void)ad:(id)ad didFailToPresentFullScreenContentWithError:(NSError *)error {
     NSDictionary *codeAndMessage = [RNFBAdMobCommon getCodeAndMessageFromAdError:error];
-    [RNFBAdMobFullScreenContentDelegate sendAppOpenEvent:ADMOB_EVENT_ERROR error:codeAndMessage];
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:codeAndMessage];
 
 }
 
 /// Tells the delegate that the ad presented full screen content.
-- (void)adDidPresentFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad {
-    [RNFBAdMobFullScreenContentDelegate sendAppOpenEvent:ADMOB_EVENT_OPENED error:nil];
+- (void)adDidPresentFullScreenContent:(id)ad {
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_OPENED error:nil];
 }
 
 /// Tells the delegate that the ad dismissed full screen content.
-- (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad {
-    [RNFBAdMobFullScreenContentDelegate sendAppOpenEvent:ADMOB_EVENT_CLOSED error:nil];
+- (void)adDidDismissFullScreenContent:(id)ad {
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_CLOSED error:nil];
 }
 
 

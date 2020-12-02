@@ -44,9 +44,15 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 }
 @end
 
-@implementation RNFBGADAppOpen : GADAppOpenAd
+@implementation RNFBAdMobFullScreenContent : NSObject
 - (void)setRequestId:(NSNumber *)requestId {
     _requestId = requestId;
+}
+- (void)setLoadTime:(NSDate *)loadTime{
+    _loadTime = loadTime;
+}
+- (void)setFullScreenPresentingAd:(id<GADFullScreenPresentingAd>)fullScreenPresentingAd{
+    _fullScreenPresentingAd = fullScreenPresentingAd;
 }
 @end
 

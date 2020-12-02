@@ -46,9 +46,13 @@
 - (void)setRequestId:(NSNumber *)requestId;
 @end
 
-@interface RNFBGADAppOpen : GADAppOpenAd
+@interface RNFBAdMobFullScreenContent : NSObject
 @property(nonatomic) NSNumber *requestId;
 - (void)setRequestId:(NSNumber *)requestId;
+@property(nonatomic) NSDate *loadTime;
+- (void)setLoadTime:(NSDate *)loadTime;
+@property(nonatomic) id<GADFullScreenPresentingAd> fullScreenPresentingAd;
+- (void)setFullScreenPresentingAd:(__strong id<GADFullScreenPresentingAd>)fullScreenPresentingAd;
 @end
 
 extern NSString *const EVENT_INTERSTITIAL;

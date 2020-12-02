@@ -26,7 +26,7 @@
 
 + (_Nonnull instancetype)sharedInstance;
 
-+ (void)sendAppOpenEvent:(NSString *)type
++ (void)sendFullScreenContentEvent:(NSString *)type
                         error:(nullable NSDictionary *)error;
 
 @end

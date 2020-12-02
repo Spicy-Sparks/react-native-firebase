@@ -19,7 +19,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBAdMobRewardedModule.h"
-#import "RNFBAdMobRewardedDelegate.h"
+#import "RNFBAdMobFullScreenContentDelegate.h"
 #import "RNFBAdMobCommon.h"
 #import "RNFBSharedUtils.h"
 #import <RNFBApp/RNFBSharedUtils.h>
@@ -70,45 +70,56 @@ RCT_EXPORT_METHOD(rewardedLoad
     NSNumber *)requestId
     :(NSString *)adUnitId
     :(NSDictionary *)adRequestOptions
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
 ) {
-  RNFBGADRewarded *rewarded = [[RNFBGADRewarded alloc] initWithAdUnitID:adUnitId];
 
-  NSDictionary *serverSideVerificationOptions = [adRequestOptions objectForKey:@"serverSideVerificationOptions"];
+    [GADRewardedAdBeta loadWithAdUnitID:adUnitId
+                             request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
+                   completionHandler:^(GADRewardedAdBeta *_Nullable ad, NSError *_Nullable error) {
+                     if (error) {
+                         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+                             @"code": @"not-loaded",
+                             @"message": @"Failed to load app open ad",
+                         } mutableCopy]];
+                       return;
+                     }
 
-  if (serverSideVerificationOptions != nil) {
-    GADServerSideVerificationOptions *options = [[GADServerSideVerificationOptions alloc] init];
+                    NSDictionary *serverSideVerificationOptions = [adRequestOptions objectForKey:@"serverSideVerificationOptions"];
 
-    NSString *userId = [serverSideVerificationOptions valueForKey:@"userId"];
+                    if (serverSideVerificationOptions != nil) {
+                      GADServerSideVerificationOptions *options = [[GADServerSideVerificationOptions alloc] init];
 
-    if (userId != nil) {
-        options.userIdentifier = userId;
-    }
+                      NSString *userId = [serverSideVerificationOptions valueForKey:@"userId"];
 
-    NSString *customData = [serverSideVerificationOptions valueForKey:@"customData"];
+                      if (userId != nil) {
+                          options.userIdentifier = userId;
+                      }
 
-    if (customData != nil) {
-      options.customRewardString = customData;
-    }
+                      NSString *customData = [serverSideVerificationOptions valueForKey:@"customData"];
 
-    [rewarded setServerSideVerificationOptions:options];
-  }
+                      if (customData != nil) {
+                        options.customRewardString = customData;
+                      }
 
-  [rewarded setRequestId:requestId];
-  GADRequest *request = [RNFBAdMobCommon buildAdRequest:adRequestOptions];
-  rewardedMap[requestId] = rewarded;
-  [rewarded loadRequest:request completionHandler:^(GADRequestError *error) {
-    if (error != nil) {
-      NSDictionary *codeAndMessage = [RNFBAdMobCommon getCodeAndMessageFromAdError:error];
-      [RNFBAdMobRewardedDelegate sendRewardedEvent:ADMOB_EVENT_ERROR requestId:requestId adUnitId:adUnitId error:codeAndMessage data:nil];
-    } else {
-      GADAdReward *reward = rewarded.reward;
-      NSDictionary *data = @{
-          @"type": reward.type,
-          @"amount": reward.amount,
-      };
-      [RNFBAdMobRewardedDelegate sendRewardedEvent:ADMOB_EVENT_REWARDED_LOADED requestId:requestId adUnitId:adUnitId error:nil data:data];
-    }
-  }];
+                      [ad setServerSideVerificationOptions:options];
+                    }
+
+
+                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate sharedInstance];
+
+                     RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
+
+                     [RNFBAdMobFullScreenContentAd setRequestId:requestId];
+                     [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
+                     [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+
+                     rewardedMap[requestId] = RNFBAdMobFullScreenContentAd;
+
+                     [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:ADMOB_EVENT_ERROR error:nil];
+
+                     resolve([NSNull null]);
+                   }];
 }
 
 RCT_EXPORT_METHOD(rewardedShow
@@ -120,17 +131,20 @@ RCT_EXPORT_METHOD(rewardedShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  GADRewardedAd *rewarded = rewardedMap[requestId];
-  if (rewarded.isReady) {
-    [rewarded presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController delegate:[RNFBAdMobRewardedDelegate sharedInstance]];
-    resolve([NSNull null]);
-  } else {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-        @"code": @"not-ready",
-        @"message": @"Rewarded ad attempted to show but was not ready.",
-    } mutableCopy]];
-  }
+   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = rewardedMap[requestId];
+   if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
+     [(GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTSharedApplication().delegate.window.rootViewController
+         userDidEarnRewardHandler:^ {
+            GADAdReward *reward = ((GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd).adReward;
+            resolve(@{@"amount":reward.amount,@"type":reward.type});
+       }];
+     resolve([NSNull null]);
+   } else {
+     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+         @"code": @"not-ready",
+         @"message": @"Interstitial ad attempted to show but was not ready.",
+     } mutableCopy]];
+   }
 }
 
 @end
-
