@@ -38,7 +38,14 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/AdMob', firebase_sdk_version
+  s.dependency 'Firebase/AdMob', firebase_sdk_version
+  s.dependency 'GoogleMobileAdsMediationAppLovin'
+  s.dependency 'GoogleMobileAdsMediationUnity'
+  s.dependency 'GoogleMobileAdsMediationMoPub'
+  s.dependency 'GoogleMobileAdsMediationFacebook'
+  s.dependency 'GoogleMobileAdsMediationTapjoy'
+  s.dependency 'GoogleMobileAdsMediationIronSource'
+  s.dependency 'GoogleMobileAdsMediationAdColony'
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

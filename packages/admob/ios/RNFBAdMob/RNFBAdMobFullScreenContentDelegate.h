@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,18 @@
  *
  */
 
-import { Platform } from 'react-native';
+#import <Foundation/Foundation.h>
 
-export default {
-  ...Platform.select({
-    android: {
-      BANNER: 'ca-app-pub-3940256099942544/6300978111',
-      INTERSTITIAL: 'ca-app-pub-3940256099942544/1033173712',
-      REWARDED: 'ca-app-pub-3940256099942544/5224354917',
-      APPOPEN: 'ca-app-pub-3940256099942544/3419835294'
-    },
-    ios: {
-      BANNER: 'ca-app-pub-3940256099942544/2934735716',
-      INTERSTITIAL: 'ca-app-pub-3940256099942544/4411468910',
-      REWARDED: 'ca-app-pub-3940256099942544/1712485313',
-      APPOPEN: 'ca-app-pub-3940256099942544/5662855259'
-    },
-  }),
-};
+#import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
+
+#import "RNFBAdMobCommon.h"
+
+@interface RNFBAdMobFullScreenContentDelegate : NSObject <GADFullScreenContentDelegate>
+
++ (_Nonnull instancetype)sharedInstance;
+
++ (void)sendAppOpenEvent:(NSString *)type
+                        error:(nullable NSDictionary *)error;
+
+@end

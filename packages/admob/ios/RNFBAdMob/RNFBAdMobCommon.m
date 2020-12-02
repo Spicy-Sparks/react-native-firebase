@@ -21,6 +21,7 @@
 
 NSString *const EVENT_INTERSTITIAL = @"admob_interstitial_event";
 NSString *const EVENT_REWARDED = @"admob_rewarded_event";
+NSString *const EVENT_APPOPEN = @"admob_appopen_event";
 NSString *const ADMOB_EVENT_LOADED = @"loaded";
 NSString *const ADMOB_EVENT_ERROR = @"error";
 NSString *const ADMOB_EVENT_OPENED = @"opened";
@@ -38,6 +39,12 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 @end
 
 @implementation RNFBGADRewarded : GADRewardedAd
+- (void)setRequestId:(NSNumber *)requestId {
+    _requestId = requestId;
+}
+@end
+
+@implementation RNFBGADAppOpen : GADAppOpenAd
 - (void)setRequestId:(NSNumber *)requestId {
     _requestId = requestId;
 }

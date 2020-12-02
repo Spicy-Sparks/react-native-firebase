@@ -1,20 +1,38 @@
 {
-  "name": "@react-native-firebase/admob",
-  "version": "10.1.0",
-  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "_from": "@react-native-firebase/admob",
+  "_id": "@react-native-firebase/admob@10.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-B6Wotz4WD+w2fsz4ZxKDO1NYoDcbrIOPfE/S7mMGg6wk2uKZqK04aanMDy2I4EbmzhGn2nshf0rNXXiIClnvIQ==",
+  "_location": "/@react-native-firebase/admob",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "@react-native-firebase/admob",
+    "name": "@react-native-firebase/admob",
+    "escapedName": "@react-native-firebase%2fadmob",
+    "scope": "@react-native-firebase",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-10.1.0.tgz",
+  "_shasum": "90acb9ebaa7f0237182c7571395cde511258a2a6",
+  "_spec": "@react-native-firebase/admob",
+  "_where": "/Users/marco/eSound",
+  "author": {
+    "name": "Invertase",
+    "email": "oss@invertase.io",
+    "url": "http://invertase.io"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
   "description": "React Native Firebase - Google AdMob is an easy way to monetize mobile apps with targeted, in-app advertising.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "genversion --semi lib/version.js",
-    "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/admob"
-  },
-  "license": "Apache-2.0",
+  "gitHead": "11867daf493233eb05cb3224061b2a209a47b1df",
   "keywords": [
     "react",
     "react-native",
@@ -26,10 +44,24 @@
     "interstitial",
     "ad consent"
   ],
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "name": "@react-native-firebase/admob",
   "peerDependencies": {
     "@react-native-firebase/app": "10.1.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/admob"
+  },
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "types": "lib/index.d.ts",
+  "version": "10.1.0"
 }

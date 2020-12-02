@@ -46,6 +46,7 @@ const nativeModuleName = [
   'RNFBAdMobModule',
   'RNFBAdMobInterstitialModule',
   'RNFBAdMobRewardedModule',
+  'RNFBAdMobFullScreenContentModule'
 ];
 
 class FirebaseAdMobModule extends FirebaseModule {
@@ -58,6 +59,10 @@ class FirebaseAdMobModule extends FirebaseModule {
 
     this.emitter.addListener('admob_rewarded_event', event => {
       this.emitter.emit(`admob_rewarded_event:${event.adUnitId}:${event.requestId}`, event);
+    });
+
+    this.emitter.addListener('admob_appopen_event', event => {
+      this.emitter.emit(`admob_appopen_event:${event.adUnitId}:${event.requestId}`, event);
     });
   }
 
@@ -81,7 +86,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: ['admob_interstitial_event', 'admob_rewarded_event'],
+  nativeEvents: ['admob_interstitial_event', 'admob_rewarded_event', 'admob_appopen_event'],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAdMobModule,
@@ -99,4 +104,5 @@ export { default as RewardedAdEventType } from './RewardedAdEventType';
 export { default as AdsConsent } from './AdsConsent';
 export { default as InterstitialAd } from './ads/InterstitialAd';
 export { default as RewardedAd } from './ads/RewardedAd';
+export { default as AppOpenAd } from './ads/AppOpenAd';
 export { default as BannerAd } from './ads/BannerAd';

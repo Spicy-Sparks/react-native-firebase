@@ -262,6 +262,7 @@ export namespace FirebaseAdMobTypes {
     BANNER: string;
     INTERSTITIAL: string;
     REWARDED: string;
+    APPOPEN: string;
   }
 
   /**
@@ -865,7 +866,7 @@ export namespace FirebaseAdMobTypes {
   ) => void;
 
   /**
-   * Base class for InterstitialAd, RewardedAd, NativeAd and BannerAd.
+   * Base class for InterstitialAd, RewardedAd, AppOpenAd, NativeAd and BannerAd.
    */
   export class MobileAd {
     /**
@@ -1079,6 +1080,36 @@ export namespace FirebaseAdMobTypes {
     static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): RewardedAd;
   }
 
+  export class AppOpenAd extends MobileAd {
+    /**
+     * Creates a new AppOpenAd instance.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AppOpenAd, AdEventType, TestIds } from '@react-native-firebase/admob';
+     *
+     * const appOpenAd = await AppOpenAd.request(TestIds.APPOPEN, {
+     *   requestAgent: 'CoolAds',
+     * });
+     *
+     * appOpenAd.onAdEvent((type, error) => {
+     *   console.log('New event: ', type, error);
+     *
+     *   if (type === AdEventType.LOADED) {
+     *     AppOpenAd.show();
+     *   }
+     * });
+     *
+     * AppOpenAd.load();
+     * ```
+     *
+     * @param adUnitId The Ad Unit ID for the AppOpen. You can find this on your Google AdMob dashboard.
+     * @param requestOptions Optional RequestOptions used to load the ad.
+     */
+    static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): AppOpenAd;
+  }
+
   /**
    * An interface for a Banner advert component.
    *
@@ -1199,6 +1230,7 @@ export const RewardedAdEventType: FirebaseAdMobTypes.RewardedAdEventType;
 export const AdsConsent: FirebaseAdMobTypes.AdsConsent;
 export const InterstitialAd: typeof FirebaseAdMobTypes.InterstitialAd;
 export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
+export const AppOpenAd: typeof FirebaseAdMobTypes.AppOpenAd;
 export const BannerAd: React.SFC<FirebaseAdMobTypes.BannerAd>;
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<

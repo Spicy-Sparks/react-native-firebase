@@ -46,8 +46,14 @@
 - (void)setRequestId:(NSNumber *)requestId;
 @end
 
+@interface RNFBGADAppOpen : GADAppOpenAd
+@property(nonatomic) NSNumber *requestId;
+- (void)setRequestId:(NSNumber *)requestId;
+@end
+
 extern NSString *const EVENT_INTERSTITIAL;
 extern NSString *const EVENT_REWARDED;
+extern NSString *const EVENT_APPOPEN;
 
 extern NSString *const ADMOB_EVENT_LOADED;
 extern NSString *const ADMOB_EVENT_ERROR;
