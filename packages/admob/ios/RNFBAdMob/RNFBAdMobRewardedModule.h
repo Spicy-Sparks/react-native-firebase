@@ -22,4 +22,6 @@
 
 @interface RNFBAdMobRewardedModule : NSObject <RCTBridgeModule>
 
+@property(strong, nonatomic) NSMutableDictionary *rewardedMap;
+
 @end

@@ -41,7 +41,7 @@ export default class AppOpenAd extends MobileAd {
 
     const requestId = _appOpenRequest++;
     const admob = getFirebaseRoot().admob();
-    return new AppOpenAd('appOpen', admob, requestId, adUnitId, options);
+    return new AppOpenAd('appopen', admob, requestId, adUnitId, options);
   }
 
   load() {
@@ -51,7 +51,6 @@ export default class AppOpenAd extends MobileAd {
     }
 
     this._loaded = true;
-    console.log(this._admob.native)
     this._admob.native.appOpenLoad(this._requestId, this._adUnitId, this._requestOptions);
   }
 

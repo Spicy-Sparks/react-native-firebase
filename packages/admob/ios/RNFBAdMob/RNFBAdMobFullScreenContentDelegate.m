@@ -14,32 +14,29 @@
  * limitations under the License.
  *
  */
-
 #import "RNFBAdMobFullScreenContentDelegate.h"
+#import "RNFBAdMobFullScreenContentModule.h"
+#import "RNFBAdMobInterstitialModule.h"
+#import "RNFBAdMobRewardedModule.h"
 
 
 @implementation RNFBAdMobFullScreenContentDelegate
 
-+ (instancetype)initWithParams:(NSNumber *)requestId
-              adUnitId:(NSString *)adUnitId{
-    static RNFBAdMobFullScreenContentDelegate *instance;
-    instance = [[RNFBAdMobFullScreenContentDelegate alloc] init];
+- (void)dealloc {
+  
+}
+
++ (id)initWithParams:(NSObject *)module
+            requestId:(NSNumber *)requestId
+            adUnitId:(NSString *)adUnitId {
+    RNFBAdMobFullScreenContentDelegate *instance = [[RNFBAdMobFullScreenContentDelegate alloc] init];
     if (instance) {
+        instance.module = module;
         instance.requestId = requestId;
         instance.adUnitId = adUnitId;
-        instance.dummy = adUnitId;
     }
     
     return instance;
-}
-
-+ (instancetype)sharedInstance {
-  static dispatch_once_t once;
-  static RNFBAdMobFullScreenContentDelegate *sharedInstance;
-  dispatch_once(&once, ^{
-    sharedInstance = [[RNFBAdMobFullScreenContentDelegate alloc] init];
-  });
-  return sharedInstance;
 }
 
 #pragma mark -
@@ -79,8 +76,25 @@
 
 /// Tells the delegate that the ad dismissed full screen content.
 - (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad {
-    self.dummy = nil;
-    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:[self adTypeFromAd:ad] type:ADMOB_EVENT_CLOSED requestId:_requestId adUnitId:_adUnitId error:nil];
+    
+    NSString *adType = [self adTypeFromAd:ad];
+    
+    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:adType type:ADMOB_EVENT_CLOSED requestId:_requestId adUnitId:_adUnitId error:nil];
+    
+    if(adType == EVENT_INTERSTITIAL){
+        RNFBAdMobInterstitialModule *m = (RNFBAdMobInterstitialModule*)_module;
+        [m.interstitialMap removeObjectForKey:_requestId];
+    }
+    
+    if(adType == EVENT_REWARDED){
+        RNFBAdMobRewardedModule *m = (RNFBAdMobRewardedModule*)_module;
+        [m.rewardedMap removeObjectForKey:_requestId];
+    }
+    
+    if(adType == EVENT_APPOPEN){
+        RNFBAdMobFullScreenContentModule *m = (RNFBAdMobFullScreenContentModule*)_module;
+        [m.appOpenMap removeObjectForKey:_requestId];
+    }
 }
 
 

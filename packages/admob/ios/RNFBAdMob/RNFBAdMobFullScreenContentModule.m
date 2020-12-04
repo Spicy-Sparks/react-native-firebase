@@ -23,8 +23,6 @@
 #import "RNFBSharedUtils.h"
 #import "RNFBAdMobFullScreenContentDelegate.h"
 
-static __strong NSMutableDictionary *appOpenMap;
-
 @implementation RNFBAdMobFullScreenContentModule
 #pragma mark -
 #pragma mark Module Setup
@@ -39,7 +37,7 @@ RCT_EXPORT_MODULE();
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    appOpenMap = [[NSMutableDictionary alloc] init];
+    _appOpenMap = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -53,8 +51,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSNumber *id in [appOpenMap allKeys]) {
-    [appOpenMap removeObjectForKey:id];
+  for (NSNumber *id in [_appOpenMap allKeys]) {
+    [_appOpenMap removeObjectForKey:id];
   }
 }
 
@@ -81,6 +79,7 @@ RCT_EXPORT_METHOD(appOpenLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
+    
       [GADAppOpenAd loadWithAdUnitID:adUnitId
                              request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                          orientation:UIInterfaceOrientationPortrait
@@ -93,15 +92,19 @@ RCT_EXPORT_METHOD(appOpenLoad
                        return;
                      }
           
-                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate initWithParams:requestId adUnitId:adUnitId];
+                    RNFBAdMobFullScreenContentDelegate *delegate = [RNFBAdMobFullScreenContentDelegate initWithParams:self
+                                      requestId:requestId adUnitId:adUnitId];
+
+                    ad.fullScreenContentDelegate = delegate;
           
                      RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
   
                      [RNFBAdMobFullScreenContentAd setRequestId:requestId];
                      [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
+                     [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
                      [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
           
-                     appOpenMap[requestId] = RNFBAdMobFullScreenContentAd;
+                     self->_appOpenMap[requestId] = RNFBAdMobFullScreenContentAd;
           
                     [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_APPOPEN type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
           
@@ -117,7 +120,7 @@ RCT_EXPORT_METHOD(appOpenShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = appOpenMap[requestId];
+    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = _appOpenMap[requestId];
     if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd && [self wasLoadTimeLessThanNHoursAgo:RNFBAdMobFullScreenContentAd.loadTime:4]) {
     [(GADAppOpenAd*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
     resolve([NSNull null]);
@@ -128,7 +131,5 @@ RCT_EXPORT_METHOD(appOpenShow
     } mutableCopy]];
   }
 }
-
-
 
 @end

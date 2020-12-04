@@ -24,12 +24,12 @@
 
 @interface RNFBAdMobFullScreenContentDelegate : NSObject <GADFullScreenContentDelegate>
 
-+ (_Nonnull instancetype)sharedInstance;
+@property (strong, nonatomic) NSObject *module;
 @property (strong, nonatomic) NSNumber *requestId;
 @property (strong, nonatomic) NSString *adUnitId;
-@property (strong, nonatomic) NSString *dummy;
 
-+ (instancetype)initWithParams:(NSNumber *)requestId
++ (id)initWithParams:(NSObject *)module
+                      requestId:(NSNumber *)requestId
                       adUnitId:(NSString *)adUnitId;
 
 

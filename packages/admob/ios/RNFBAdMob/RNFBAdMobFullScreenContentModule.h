@@ -23,4 +23,6 @@
 
 @interface RNFBAdMobFullScreenContentModule : NSObject <RCTBridgeModule>
 
+@property(strong, nonatomic) NSMutableDictionary *appOpenMap;
+
 @end

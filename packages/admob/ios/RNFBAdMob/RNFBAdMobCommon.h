@@ -53,6 +53,8 @@
 - (void)setLoadTime:(NSDate *)loadTime;
 @property(nonatomic) id<GADFullScreenPresentingAd> fullScreenPresentingAd;
 - (void)setFullScreenPresentingAd:(__strong id<GADFullScreenPresentingAd>)fullScreenPresentingAd;
+@property(nonatomic) id<GADFullScreenContentDelegate> fullScreenDelegate;
+- (void)setFullScreenDelegate:(__strong id<GADFullScreenContentDelegate>) fullScreenDelegate;
 @end
 
 extern NSString *const EVENT_INTERSTITIAL;

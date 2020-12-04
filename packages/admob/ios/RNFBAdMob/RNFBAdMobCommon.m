@@ -54,6 +54,9 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 - (void)setFullScreenPresentingAd:(id<GADFullScreenPresentingAd>)fullScreenPresentingAd{
     _fullScreenPresentingAd = fullScreenPresentingAd;
 }
+- (void)setFullScreenDelegate:(__strong id<GADFullScreenContentDelegate>) fullScreenDelegate{
+    _fullScreenDelegate = fullScreenDelegate;
+}
 @end
 
 @implementation RNFBAdMobCommon
@@ -79,18 +82,6 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 
     if (adRequestOptions[@"keywords"]) {
         request.keywords = adRequestOptions[@"keywords"];
-    }
-
-    if (adRequestOptions[@"testDevices"]) {
-        NSMutableArray *devices = [@[] mutableCopy];
-        for (NSString *key in adRequestOptions[@"testDevices"]) {
-            if ([key isEqualToString:@"EMULATOR"]) {
-                [devices addObject:kGADSimulatorID];
-            } else {
-                [devices addObject:key];
-            }
-        }
-        request.testDevices = devices;
     }
 
     if (adRequestOptions[@"location"]) {

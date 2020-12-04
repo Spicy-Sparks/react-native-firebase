@@ -23,8 +23,6 @@
 #import "RNFBSharedUtils.h"
 #import "RNFBAdMobFullScreenContentDelegate.h"
 
-static __strong NSMutableDictionary *interstitialMap;
-
 @implementation RNFBAdMobInterstitialModule
 #pragma mark -
 #pragma mark Module Setup
@@ -39,7 +37,7 @@ RCT_EXPORT_MODULE();
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    interstitialMap = [[NSMutableDictionary alloc] init];
+    _interstitialMap = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -53,10 +51,10 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSNumber *id in [interstitialMap allKeys]) {
-    RNFBGADInterstitial * ad = interstitialMap[id];
+  for (NSNumber *id in [_interstitialMap allKeys]) {
+    RNFBGADInterstitial * ad = _interstitialMap[id];
     [ad setRequestId:@-1];
-    [interstitialMap removeObjectForKey:id];
+    [_interstitialMap removeObjectForKey:id];
   }
 }
 
@@ -82,17 +80,22 @@ RCT_EXPORT_METHOD(interstitialLoad
                        } mutableCopy]];
                      return;
                    }
+      
+                   RNFBAdMobFullScreenContentDelegate *delegate = [RNFBAdMobFullScreenContentDelegate
+                                                                  initWithParams:self
+                                                                   requestId:requestId
+                                                                   adUnitId:adUnitId];
 
-                  ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate
-                                     initWithParams:requestId adUnitId:adUnitId];
+                   ad.fullScreenContentDelegate = delegate;
                    
                    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
 
                    [RNFBAdMobFullScreenContentAd setRequestId:requestId];
                    [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
                    [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+                   [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
         
-                   interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
+                   self->_interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
         
                    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_INTERSTITIAL type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
         
@@ -108,7 +111,7 @@ RCT_EXPORT_METHOD(interstitialShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = interstitialMap[requestId];
+  RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = _interstitialMap[requestId];
   if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
     [(GADInterstitialAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
     resolve([NSNull null]);

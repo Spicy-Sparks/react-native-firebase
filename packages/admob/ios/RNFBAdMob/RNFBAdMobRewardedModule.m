@@ -24,8 +24,6 @@
 #import "RNFBSharedUtils.h"
 #import <RNFBApp/RNFBSharedUtils.h>
 
-static __strong NSMutableDictionary *rewardedMap;
-
 @implementation RNFBAdMobRewardedModule
 #pragma mark -
 #pragma mark Module Setup
@@ -40,7 +38,7 @@ RCT_EXPORT_MODULE();
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    rewardedMap = [[NSMutableDictionary alloc] init];
+    _rewardedMap = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -54,10 +52,10 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSNumber *id in [rewardedMap allKeys]) {
-    RNFBGADRewarded * ad = rewardedMap[id];
+  for (NSNumber *id in [_rewardedMap allKeys]) {
+    RNFBGADRewarded * ad = _rewardedMap[id];
     [ad setRequestId:@-1];
-    [rewardedMap removeObjectForKey:id];
+    [_rewardedMap removeObjectForKey:id];
   }
 }
 
@@ -73,7 +71,7 @@ RCT_EXPORT_METHOD(rewardedLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-    
+
     [GADRewardedAdBeta loadWithAdUnitID:adUnitId
                              request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                    completionHandler:^(GADRewardedAdBeta *_Nullable ad, NSError *_Nullable error) {
@@ -84,7 +82,7 @@ RCT_EXPORT_METHOD(rewardedLoad
                          } mutableCopy]];
                        return;
                      }
-        
+
                     NSDictionary *serverSideVerificationOptions = [adRequestOptions objectForKey:@"serverSideVerificationOptions"];
 
                     if (serverSideVerificationOptions != nil) {
@@ -105,15 +103,20 @@ RCT_EXPORT_METHOD(rewardedLoad
                       [ad setServerSideVerificationOptions:options];
                     }
         
-                     ad.fullScreenContentDelegate = [RNFBAdMobFullScreenContentDelegate initWithParams:requestId adUnitId:adUnitId];
+                    RNFBAdMobFullScreenContentDelegate *delegate = [RNFBAdMobFullScreenContentDelegate initWithParams:self
+                                      requestId:requestId
+                                      adUnitId:adUnitId];
+
+                    ad.fullScreenContentDelegate = delegate;
         
                      RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
 
                      [RNFBAdMobFullScreenContentAd setRequestId:requestId];
                      [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
                      [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+                     [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
           
-                     rewardedMap[requestId] = RNFBAdMobFullScreenContentAd;
+                     self->_rewardedMap[requestId] = RNFBAdMobFullScreenContentAd;
           
                     [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_REWARDED type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
           
@@ -130,7 +133,7 @@ RCT_EXPORT_METHOD(rewardedShow
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = rewardedMap[requestId];
+   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = _rewardedMap[requestId];
    if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
      [(GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController
          userDidEarnRewardHandler:^ {

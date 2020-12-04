@@ -75,22 +75,6 @@ export default function validateAdRequestOptions(options) {
     out.keywords = options.keywords;
   }
 
-  if (options.testDevices) {
-    if (!isArray(options.testDevices)) {
-      throw new Error("'options.testDevices' expected an array containing string values");
-    }
-
-    for (let i = 0; i < options.testDevices.length; i++) {
-      const device = options.testDevices[i];
-
-      if (!isString(device)) {
-        throw new Error("'options.testDevices' expected an array containing string values");
-      }
-    }
-
-    out.testDevices = options.testDevices;
-  }
-
   if (options.contentUrl) {
     if (!isString(options.contentUrl)) {
       throw new Error("'options.contentUrl' expected a string value");

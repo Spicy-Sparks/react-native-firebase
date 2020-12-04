@@ -58,5 +58,21 @@ export default function validateAdRequestConfiguration(requestConfiguration) {
     out.tagForUnderAgeOfConsent = requestConfiguration.tagForUnderAgeOfConsent;
   }
 
+  if (hasOwnProperty(requestConfiguration, 'testDevices')) {
+    if (!isArray(requestConfiguration.testDevices)) {
+      throw new Error("'options.testDevices' expected an array containing string values");
+    }
+
+    for (let i = 0; i < requestConfiguration.testDevices.length; i++) {
+      const device = requestConfiguration.testDevices[i];
+
+      if (!isString(device)) {
+        throw new Error("'options.testDevices' expected an array containing string values");
+      }
+    }
+
+    out.testDevices = requestConfiguration.testDevices;
+  }
+
   return out;
 }

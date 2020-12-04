@@ -23,4 +23,6 @@
 
 @interface RNFBAdMobInterstitialModule : NSObject <RCTBridgeModule>
 
+@property(strong, nonatomic) NSMutableDictionary *interstitialMap;
+
 @end

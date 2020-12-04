@@ -68,6 +68,18 @@ RCT_EXPORT_METHOD(setRequestConfiguration:
     BOOL tag = (BOOL) requestConfiguration[@"tagForUnderAgeOfConsent"];
     [GADMobileAds.sharedInstance.requestConfiguration tagForUnderAgeOfConsent:tag];
   }
+    
+  if (requestConfiguration[@"testDevices"]) {
+    NSMutableArray *devices = [@[] mutableCopy];
+    for (NSString *key in requestConfiguration[@"testDevices"]) {
+        if ([key isEqualToString:@"EMULATOR"]) {
+            [devices addObject:kGADSimulatorID];
+        } else {
+                [devices addObject:key];
+        }
+    }
+    [GADMobileAds.sharedInstance.requestConfiguration setTestDeviceIdentifiers:devices];
+  }
 }
 
 @end
