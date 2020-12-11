@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(interstitialLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  [GADInterstitialAdBeta loadWithAdUnitID:adUnitId
+    [GADInterstitialAdBeta loadWithAdUnitID:adUnitId
                            request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                  completionHandler:^(GADInterstitialAdBeta *_Nullable ad, NSError *_Nullable error) {
                    if (error) {
@@ -81,25 +81,28 @@ RCT_EXPORT_METHOD(interstitialLoad
                      return;
                    }
       
-                   RNFBAdMobFullScreenContentDelegate *delegate = [RNFBAdMobFullScreenContentDelegate
+                    RNFBAdMobFullScreenContentDelegate *delegate = [RNFBAdMobFullScreenContentDelegate
                                                                   initWithParams:self
                                                                    requestId:requestId
                                                                    adUnitId:adUnitId];
 
-                   ad.fullScreenContentDelegate = delegate;
+                    ad.fullScreenContentDelegate = delegate;
+        
+                    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
+        
+                    [RNFBAdMobFullScreenContentAd setRequestId:requestId];
+                    [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
+                    [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
+                    [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
                    
-                   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
-
-                   [RNFBAdMobFullScreenContentAd setRequestId:requestId];
-                   [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
-                   [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
-                   [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
+                    if(self->_interstitialMap == nil)
+                        self->_interstitialMap = [[NSMutableDictionary alloc] init];
         
-                   self->_interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
+                    self->_interstitialMap[requestId] = RNFBAdMobFullScreenContentAd;
         
-                   [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_INTERSTITIAL type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
+                    [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_INTERSTITIAL type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];
         
-                   resolve([NSNull null]);
+                    resolve([NSNull null]);
                  }];
 }
 

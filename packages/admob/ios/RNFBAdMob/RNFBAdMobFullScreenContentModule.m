@@ -104,6 +104,9 @@ RCT_EXPORT_METHOD(appOpenLoad
                      [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
                      [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
           
+                     if(self->_appOpenMap == nil)
+                        self->_appOpenMap = [[NSMutableDictionary alloc] init];
+          
                      self->_appOpenMap[requestId] = RNFBAdMobFullScreenContentAd;
           
                     [RNFBAdMobFullScreenContentDelegate sendFullScreenContentEvent:EVENT_APPOPEN type:ADMOB_EVENT_LOADED requestId:requestId adUnitId:adUnitId error:nil];

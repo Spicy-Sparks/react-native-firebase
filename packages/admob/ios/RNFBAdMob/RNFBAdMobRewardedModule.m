@@ -115,6 +115,9 @@ RCT_EXPORT_METHOD(rewardedLoad
                      [RNFBAdMobFullScreenContentAd setLoadTime:[NSDate date]];
                      [RNFBAdMobFullScreenContentAd setFullScreenPresentingAd:ad];
                      [RNFBAdMobFullScreenContentAd setFullScreenDelegate:delegate];
+        
+                     if(self->_rewardedMap == nil)
+                        self->_rewardedMap = [[NSMutableDictionary alloc] init];
           
                      self->_rewardedMap[requestId] = RNFBAdMobFullScreenContentAd;
           
