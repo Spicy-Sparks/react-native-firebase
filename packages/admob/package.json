@@ -1,6 +1,6 @@
 {
   "_from": "@react-native-firebase/admob",
-  "_id": "@react-native-firebase/admob@10.1.0",
+  "_id": "@react-native-firebase/admob@10.2.0",
   "_inBundle": false,
   "_integrity": "sha512-B6Wotz4WD+w2fsz4ZxKDO1NYoDcbrIOPfE/S7mMGg6wk2uKZqK04aanMDy2I4EbmzhGn2nshf0rNXXiIClnvIQ==",
   "_location": "/@react-native-firebase/admob",
@@ -20,7 +20,7 @@
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-10.1.0.tgz",
+  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-10.2.0.tgz",
   "_shasum": "90acb9ebaa7f0237182c7571395cde511258a2a6",
   "_spec": "@react-native-firebase/admob",
   "_where": "/Users/marco/eSound",
@@ -48,7 +48,7 @@
   "main": "lib/index.js",
   "name": "@react-native-firebase/admob",
   "peerDependencies": {
-    "@react-native-firebase/app": "10.1.0"
+    "@react-native-firebase/app": "10.2.0"
   },
   "publishConfig": {
     "access": "public"
@@ -63,5 +63,5 @@
     "prepare": "yarn run build"
   },
   "types": "lib/index.d.ts",
-  "version": "10.1.0"
+  "version": "10.2.0"
 }
