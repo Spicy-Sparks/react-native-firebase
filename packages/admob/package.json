@@ -1,6 +1,6 @@
 {
   "_from": "@react-native-firebase/admob",
-  "_id": "@react-native-firebase/admob@10.3.1",
+  "_id": "@react-native-firebase/admob@10.5.1",
   "_inBundle": false,
   "_integrity": "sha512-B6Wotz4WD+w2fsz4ZxKDO1NYoDcbrIOPfE/S7mMGg6wk2uKZqK04aanMDy2I4EbmzhGn2nshf0rNXXiIClnvIQ==",
   "_location": "/@react-native-firebase/admob",
@@ -48,7 +48,7 @@
   "main": "lib/index.js",
   "name": "@react-native-firebase/admob",
   "peerDependencies": {
-    "@react-native-firebase/app": "10.3.1"
+    "@react-native-firebase/app": "10.5.0"
   },
   "publishConfig": {
     "access": "public"
@@ -63,5 +63,5 @@
     "prepare": "yarn run build"
   },
   "types": "lib/index.d.ts",
-  "version": "10.3.1"
+  "version": "10.5.1"
 }
