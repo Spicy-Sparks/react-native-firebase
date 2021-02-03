@@ -72,9 +72,9 @@ RCT_EXPORT_METHOD(rewardedLoad
     :(RCTPromiseRejectBlock) reject
 ) {
 
-    [GADRewardedAdBeta loadWithAdUnitID:adUnitId
+    [GADRewardedAd loadWithAdUnitID:adUnitId
                              request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
-                   completionHandler:^(GADRewardedAdBeta *_Nullable ad, NSError *_Nullable error) {
+                   completionHandler:^(GADRewardedAd *_Nullable ad, NSError *_Nullable error) {
                      if (error) {
                          [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
                              @"code": @"not-loaded",
@@ -108,7 +108,7 @@ RCT_EXPORT_METHOD(rewardedLoad
                                       adUnitId:adUnitId];
 
                     ad.fullScreenContentDelegate = delegate;
-        
+
                      RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = [RNFBAdMobFullScreenContent alloc];
 
                      [RNFBAdMobFullScreenContentAd setRequestId:requestId];
@@ -138,9 +138,9 @@ RCT_EXPORT_METHOD(rewardedShow
 ) {
    RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = _rewardedMap[requestId];
    if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
-     [(GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController
+     [(GADRewardedAd*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController
          userDidEarnRewardHandler:^ {
-            GADAdReward *reward = ((GADRewardedAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd).adReward;
+            GADAdReward *reward = ((GADRewardedAd*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd).adReward;
             resolve(@{@"amount":reward.amount,@"type":reward.type});
        }];
      resolve([NSNull null]);

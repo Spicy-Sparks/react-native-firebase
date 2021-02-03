@@ -74,7 +74,7 @@ def firebaseJSONAdmobDelayAppMeasurementInitBool = false
 
 if (rootProject.ext.firebaseJson) {
   firebaseJSONAdmobAppIDString = rootProject.ext.firebaseJson.getStringValue("admob_android_app_id", "")
-  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init")
+  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init", false)
 }
 
 if (!firebaseJSONAdmobAppIDString) {
@@ -109,13 +109,6 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-ads"
   implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
-  implementation 'com.google.ads.mediation:applovin:+'
-  implementation 'com.google.ads.mediation:facebook:+'
-  implementation 'com.google.ads.mediation:mopub:+'
-  implementation 'com.google.ads.mediation:tapjoy:+'
-  implementation 'com.google.ads.mediation:unity:+'
-  implementation 'com.google.ads.mediation:ironsource:+'
-  implementation 'com.google.ads.mediation:adcolony:+'
 }
 
 ReactNative.shared.applyPackageVersion()

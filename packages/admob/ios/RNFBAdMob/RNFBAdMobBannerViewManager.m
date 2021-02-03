@@ -107,7 +107,7 @@
   }];
 }
 
-- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(NSError *)error {
   NSDictionary *errorAndMessage = [RNFBAdMobCommon getCodeAndMessageFromAdError:error];
   [self sendEvent:@"onAdFailedToLoad" payload:errorAndMessage];
 }

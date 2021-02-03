@@ -70,9 +70,9 @@ RCT_EXPORT_METHOD(interstitialLoad
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-    [GADInterstitialAdBeta loadWithAdUnitID:adUnitId
+    [GADInterstitialAd loadWithAdUnitID:adUnitId
                            request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
-                 completionHandler:^(GADInterstitialAdBeta *_Nullable ad, NSError *_Nullable error) {
+                 completionHandler:^(GADInterstitialAd *_Nullable ad, NSError *_Nullable error) {
                    if (error) {
                        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
                            @"code": @"not-loaded",
@@ -116,7 +116,7 @@ RCT_EXPORT_METHOD(interstitialShow
 ) {
   RNFBAdMobFullScreenContent *RNFBAdMobFullScreenContentAd = _interstitialMap[requestId];
   if (RNFBAdMobFullScreenContentAd && RNFBAdMobFullScreenContentAd.fullScreenPresentingAd) {
-    [(GADInterstitialAdBeta*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
+    [(GADInterstitialAd*)RNFBAdMobFullScreenContentAd.fullScreenPresentingAd presentFromRootViewController:RCTKeyWindow().rootViewController];
     resolve([NSNull null]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{

@@ -32,7 +32,7 @@ NSString *const ADMOB_EVENT_REWARDED_LOADED = @"rewarded_loaded";
 NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 
 
-@implementation RNFBGADInterstitial : GADInterstitial
+@implementation RNFBGADInterstitial : GADInterstitialAd
 - (void)setRequestId:(NSNumber *)requestId {
     _requestId = requestId;
 }

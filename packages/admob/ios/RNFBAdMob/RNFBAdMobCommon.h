@@ -36,7 +36,7 @@
 
 @end
 
-@interface RNFBGADInterstitial : GADInterstitial
+@interface RNFBGADInterstitial : GADInterstitialAd
 @property(nonatomic) NSNumber *requestId;
 - (void)setRequestId:(NSNumber *)requestId;
 @end

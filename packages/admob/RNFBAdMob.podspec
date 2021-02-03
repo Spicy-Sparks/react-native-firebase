@@ -38,7 +38,8 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency 'Firebase/AdMob', firebase_sdk_version
+  #s.dependency 'Firebase/AdMob', firebase_sdk_version
+  s.dependency 'Google-Mobile-Ads-SDK'
   s.dependency 'GoogleMobileAdsMediationAppLovin'
   s.dependency 'GoogleMobileAdsMediationUnity'
   s.dependency 'GoogleMobileAdsMediationMoPub'

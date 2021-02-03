@@ -52,9 +52,9 @@
 
 - (NSString*)adTypeFromAd:(id) ad
 {
-    if([ad isKindOfClass:[GADInterstitialAdBeta class]])
+    if([ad isKindOfClass:[GADInterstitialAd class]])
         return EVENT_INTERSTITIAL;
-    if([ad isKindOfClass:[GADRewardedAdBeta class]])
+    if([ad isKindOfClass:[GADRewardedAd class]])
         return EVENT_REWARDED;
     
     return EVENT_APPOPEN;
