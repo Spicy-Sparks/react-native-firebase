@@ -1,12 +1,12 @@
 {
   "_args": [
     [
-      "@react-native-firebase/admob@10.6.3",
+      "@react-native-firebase/admob@10.6.4",
       "/Users/geroa/eSound"
     ]
   ],
-  "_from": "@react-native-firebase/admob@10.6.3",
-  "_id": "@react-native-firebase/admob@10.6.3",
+  "_from": "@react-native-firebase/admob@10.6.4",
+  "_id": "@react-native-firebase/admob@10.6.4",
   "_inBundle": false,
   "_integrity": "sha512-lMvQ0OeqAlJlmfyRFd7fpEcAAG6WlJUwd9UuQIFxW5rGerbu4BXALFVrEZ0eQw5BpHfJtvS68++d6TbhkK2Y5g==",
   "_location": "/@react-native-firebase/admob",
@@ -14,7 +14,7 @@
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "@react-native-firebase/admob@10.6.3",
+    "raw": "@react-native-firebase/admob@10.6.4",
     "name": "@react-native-firebase/admob",
     "escapedName": "@react-native-firebase%2fadmob",
     "scope": "@react-native-firebase",
@@ -25,7 +25,7 @@
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-10.6.3.tgz",
+  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-10.6.4.tgz",
   "_spec": "10.6.3",
   "_where": "/Users/geroa/eSound",
   "author": {
@@ -50,7 +50,7 @@
   "main": "lib/index.js",
   "name": "@react-native-firebase/admob",
   "peerDependencies": {
-    "@react-native-firebase/app": "10.6.3"
+    "@react-native-firebase/app": "10.6.4"
   },
   "publishConfig": {
     "access": "public"
@@ -65,7 +65,7 @@
     "prepare": "yarn run build"
   },
   "types": "lib/index.d.ts",
-  "version": "10.6.3",
+  "version": "10.6.4",
   "react-native": {
     "zlib": "browserify-zlib",
     "console": "console-browserify",
