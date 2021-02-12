@@ -65,7 +65,7 @@
     "prepare": "yarn run build"
   },
   "types": "lib/index.d.ts",
-  "version": "10.6.4",
+  "version": "10.7.0",
   "react-native": {
     "zlib": "browserify-zlib",
     "console": "console-browserify",
