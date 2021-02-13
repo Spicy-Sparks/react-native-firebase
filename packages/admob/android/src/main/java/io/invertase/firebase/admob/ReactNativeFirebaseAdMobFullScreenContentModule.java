@@ -139,7 +139,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
       };
 
     getCurrentActivity().runOnUiThread(() -> {
-      AppOpenAd.load(getApplicationContext(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+      AppOpenAd.load(getCurrentActivity(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     });
   }
 
