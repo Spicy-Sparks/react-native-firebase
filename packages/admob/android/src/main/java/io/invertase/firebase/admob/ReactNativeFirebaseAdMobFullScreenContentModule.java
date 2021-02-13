@@ -175,7 +175,8 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
         };
 
       if (RNFBGADAppOpenAd._appOpenAd != null && wasLoadTimeLessThanNHoursAgo(RNFBGADAppOpenAd._loadTime, 4)) {
-        RNFBGADAppOpenAd._appOpenAd.show(getCurrentActivity(), fullScreenContentCallback);
+        RNFBGADAppOpenAd._appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
+        RNFBGADAppOpenAd._appOpenAd.show(getCurrentActivity());
         promise.resolve(null);
       } else {
         rejectPromiseWithCodeAndMessage(promise, "not-ready", "AppOpen ad attempted to show but was not ready.");
