@@ -67,7 +67,7 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-      RewardedAd.load(getApplicationContext(), adUnitId,
+      RewardedAd.load(getCurrentActivity(), adUnitId,
         adRequest, new RewardedAdLoadCallback(){
           @Override
           public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
