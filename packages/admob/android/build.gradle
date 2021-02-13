@@ -17,7 +17,7 @@ buildscript {
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.4"
+  id "io.invertase.gradle.build" version "1.5"
 }
 
 def appProject
@@ -111,11 +111,11 @@ dependencies {
   implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
   implementation 'com.google.ads.mediation:applovin:+'
   implementation 'com.google.ads.mediation:facebook:+'
-  implementation 'com.google.ads.mediation:mopub:+'
-  implementation 'com.google.ads.mediation:tapjoy:+'
   implementation 'com.google.ads.mediation:unity:+'
+  implementation 'com.google.ads.mediation:adcolony:4.3.0.0'
+  implementation 'com.google.ads.mediation:tapjoy:+'
+  implementation 'com.google.ads.mediation:mopub:+'
   implementation 'com.google.ads.mediation:ironsource:+'
-  implementation 'com.google.ads.mediation:adcolony:+'
 }
 
 ReactNative.shared.applyPackageVersion()
