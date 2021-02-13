@@ -115,7 +115,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
          * @param ad the loaded app open ad.
          */
         @Override
-        public void onAppOpenAdLoaded(AppOpenAd ad) {
+        public void onAdLoaded(AppOpenAd ad) {
           RNFBGADAppOpenAd RNFBGADAppOpenAd = new RNFBGADAppOpenAd(ad, requestId, adUnitId, (new Date()).getTime());
           appOpenAdArray.put(requestId, RNFBGADAppOpenAd);
           sendAppOpenEvent(AD_LOADED, requestId, adUnitId, null);
@@ -127,7 +127,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
          * @param loadAdError the error.
          */
         @Override
-        public void onAppOpenAdFailedToLoad(LoadAdError loadAdError) {
+        public void onAdFailedToLoad(LoadAdError loadAdError) {
 
           WritableMap error = Arguments.createMap();
           String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(loadAdError.getCode());
