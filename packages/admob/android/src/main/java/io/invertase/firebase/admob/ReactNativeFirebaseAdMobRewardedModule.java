@@ -12,7 +12,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -61,49 +64,57 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
       return;
     }
     getCurrentActivity().runOnUiThread(() -> {
-      RewardedAd rewardedAd = new RewardedAd(getApplicationContext(), adUnitId);
 
-      RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
-        @Override
-        public void onRewardedAdLoaded() {
-          RewardItem rewardItem = rewardedAd.getRewardItem();
-          WritableMap data = Arguments.createMap();
-          data.putString("type", rewardItem.getType());
-          data.putInt("amount", rewardItem.getAmount());
-          sendRewardedEvent(AD_REWARDED_LOADED, requestId, adUnitId, null, data);
-        }
+      AdRequest adRequest = new AdRequest.Builder().build();
 
-        @Override
-        public void onRewardedAdFailedToLoad(LoadAdError error) {
-          WritableMap errorMap = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
-          errorMap.putString("code", codeAndMessage[0]);
-          errorMap.putString("message", codeAndMessage[1]);
-          sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
-        }
-      };
-
-      if (adRequestOptions.hasKey("serverSideVerificationOptions")) {
-        ReadableMap serverSideVerificationOptions = adRequestOptions.getMap("serverSideVerificationOptions");
-
-        if (serverSideVerificationOptions != null) {
-          ServerSideVerificationOptions.Builder options = new ServerSideVerificationOptions.Builder();
-
-          if (serverSideVerificationOptions.hasKey("userId")) {
-            options.setUserId(serverSideVerificationOptions.getString("userId"));
+      RewardedAd.load(getApplicationContext(), adUnitId,
+        adRequest, new RewardedAdLoadCallback(){
+          @Override
+          public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+            WritableMap errorMap = Arguments.createMap();
+            String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(loadAdError.getCode());
+            errorMap.putString("code", codeAndMessage[0]);
+            errorMap.putString("message", codeAndMessage[1]);
+            sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
           }
 
+          @Override
+          public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+            RewardItem rewardItem = rewardedAd.getRewardItem();
+            WritableMap data = Arguments.createMap();
+            data.putString("type", rewardItem.getType());
+            data.putInt("amount", rewardItem.getAmount());
+            sendRewardedEvent(AD_REWARDED_LOADED, requestId, adUnitId, null, data);
 
-          if (serverSideVerificationOptions.hasKey("customData")) {
-            options.setCustomData(serverSideVerificationOptions.getString("customData"));
+            rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+              @Override
+              public void onAdShowedFullScreenContent() {
+                // Called when ad is shown.
+                rewardedAdArray.remove(requestId);
+                sendRewardedEvent(AD_OPENED, requestId, adUnitId, null, null);
+              }
+
+              @Override
+              public void onAdFailedToShowFullScreenContent(AdError adError) {
+                WritableMap errorMap = Arguments.createMap();
+                String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(adError.getCode());
+                errorMap.putString("code", codeAndMessage[0]);
+                errorMap.putString("message", codeAndMessage[1]);
+                sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
+              }
+
+              @Override
+              public void onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                // Don't forget to set the ad reference to null so you
+                // don't show the ad a second time.
+                sendRewardedEvent(AD_CLOSED, requestId, adUnitId, null, null);
+              }
+            });
+
+            rewardedAdArray.put(requestId, rewardedAd);
           }
-
-          rewardedAd.setServerSideVerificationOptions(options.build());
-        }
-      }
-
-      rewardedAd.loadAd(buildAdRequest(adRequestOptions), adLoadCallback);
-      rewardedAdArray.put(requestId, rewardedAd);
+        });
     });
   }
 
@@ -121,37 +132,22 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
         immersiveModeEnabled = showOptions.getBoolean("immersiveModeEnabled");
       }
 
-      RewardedAdCallback adCallback = new RewardedAdCallback() {
-        @Override
-        public void onRewardedAdOpened() {
-          sendRewardedEvent(AD_OPENED, requestId, adUnitId, null, null);
-        }
+      if (rewardedAd != null) {
+        rewardedAd.show(getCurrentActivity(), new OnUserEarnedRewardListener() {
+          @Override
+          public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+            WritableMap data = Arguments.createMap();
+            data.putString("type", rewardItem.getType());
+            data.putInt("amount", rewardItem.getAmount());
+            sendRewardedEvent(AD_REWARDED_EARNED_REWARD, requestId, adUnitId, null, data);
+          }
+        });
 
-        @Override
-        public void onRewardedAdClosed() {
-          sendRewardedEvent(AD_CLOSED, requestId, adUnitId, null, null);
-        }
+        promise.resolve(null);
 
-        @Override
-        public void onUserEarnedReward(@NonNull RewardItem reward) {
-          WritableMap data = Arguments.createMap();
-          data.putString("type", reward.getType());
-          data.putInt("amount", reward.getAmount());
-          sendRewardedEvent(AD_REWARDED_EARNED_REWARD, requestId, adUnitId, null, data);
-        }
-
-        @Override
-        public void onRewardedAdFailedToShow(AdError error) {
-          WritableMap errorMap = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
-          errorMap.putString("code", codeAndMessage[0]);
-          errorMap.putString("message", codeAndMessage[1]);
-          sendRewardedEvent(AD_ERROR, requestId, adUnitId, errorMap, null);
-        }
-      };
-
-      rewardedAd.show(getCurrentActivity(), adCallback, immersiveModeEnabled);
-      promise.resolve(null);
+      } else {
+        rejectPromiseWithCodeAndMessage(promise, "not-ready", "Rewarded ad attempted to show but was not ready.");
+      }
     });
   }
 }
