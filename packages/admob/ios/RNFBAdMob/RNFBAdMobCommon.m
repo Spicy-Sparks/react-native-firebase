@@ -76,9 +76,9 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
         }
     }
 
-    GADExtras *networkExtras = [[GADExtras alloc] init];
+    /*GADExtras *networkExtras = [[GADExtras alloc] init];
     networkExtras.additionalParameters = extras;
-    [request registerAdNetworkExtras:networkExtras];
+    [request registerAdNetworkExtras:networkExtras];*/
 
     if (adRequestOptions[@"keywords"]) {
         request.keywords = adRequestOptions[@"keywords"];
@@ -104,16 +104,16 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
     NSString *code = @"unknown";
     NSString *message = @"An unknown error occurred.";
 
-    if (error.code == kGADErrorInvalidRequest) {
+    if (error.code == GADErrorInvalidRequest) {
         code = @"invalid-request";
         message = @"The ad request was invalid; for instance, the ad unit ID was incorrect.";
-    } else if (error.code == kGADErrorNoFill) {
+    } else if (error.code == GADErrorNoFill) {
         code = @"no-fill";
         message = @"The ad request was successful, but no ad was returned due to lack of ad inventory.";
-    } else if (error.code == kGADErrorNetworkError) {
+    } else if (error.code == GADErrorNetworkError) {
         code = @"network-error";
         message = @"The ad request was unsuccessful due to network connectivity.";
-    } else if (error.code == kGADErrorInternalError) {
+    } else if (error.code == GADErrorInternalError) {
         code = @"internal-error";
         message = @"Something happened internally; for instance, an invalid response was received from the ad server.";
     }
