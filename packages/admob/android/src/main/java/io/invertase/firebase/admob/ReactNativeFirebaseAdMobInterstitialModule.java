@@ -19,28 +19,31 @@ package io.invertase.firebase.admob;
 
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
 
-import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.buildAdRequest;
 import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.getCodeAndMessageFromAdErrorCode;
 import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.sendAdEvent;
-import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_CLICKED;
 import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_CLOSED;
 import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_ERROR;
-import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_LEFT_APPLICATION;
 import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_LOADED;
 import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_OPENED;
 
@@ -72,49 +75,57 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
       return;
     }
     getCurrentActivity().runOnUiThread(() -> {
-      InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
-      interstitialAd.setAdUnitId(adUnitId);
 
-      // Apply AdRequest builder
-      interstitialAd.loadAd(buildAdRequest(adRequestOptions));
+      AdRequest adRequest = new AdRequest.Builder().build();
 
-      interstitialAd.setAdListener(new AdListener() {
+
+      InterstitialAd.load(getApplicationContext(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
         @Override
-        public void onAdLoaded() {
+        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+          // The mInterstitialAd reference will be null until
+          // an ad is loaded.
           sendInterstitialEvent(AD_LOADED, requestId, adUnitId, null);
+
+          interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+            @Override
+            public void onAdDismissedFullScreenContent() {
+              // Called when fullscreen content is dismissed.
+              sendInterstitialEvent(AD_CLOSED, requestId, adUnitId, null);
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(AdError adError) {
+              // Called when fullscreen content failed to show.
+              WritableMap errorMap = Arguments.createMap();
+              String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(adError.getCode());
+              errorMap.putString("code", codeAndMessage[0]);
+              errorMap.putString("message", codeAndMessage[1]);
+              sendInterstitialEvent(AD_ERROR, requestId, adUnitId, errorMap);
+            }
+
+            @Override
+            public void onAdShowedFullScreenContent() {
+              // Called when fullscreen content is shown.
+              // Make sure to set your reference to null so you don't
+              // show it a second time.
+              interstitialAdArray.remove(requestId);
+              sendInterstitialEvent(AD_OPENED, requestId, adUnitId, null);
+
+            }
+          });
+
+          interstitialAdArray.put(requestId, interstitialAd);
         }
 
         @Override
-        public void onAdFailedToLoad(LoadAdError error) {
+        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
           WritableMap errorMap = Arguments.createMap();
-          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(error.getCode());
+          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(loadAdError.getCode());
           errorMap.putString("code", codeAndMessage[0]);
           errorMap.putString("message", codeAndMessage[1]);
           sendInterstitialEvent(AD_ERROR, requestId, adUnitId, errorMap);
         }
-
-        @Override
-        public void onAdOpened() {
-          sendInterstitialEvent(AD_OPENED, requestId, adUnitId, null);
-        }
-
-        @Override
-        public void onAdClicked() {
-          sendInterstitialEvent(AD_CLICKED, requestId, adUnitId, null);
-        }
-
-        @Override
-        public void onAdLeftApplication() {
-          sendInterstitialEvent(AD_LEFT_APPLICATION, requestId, adUnitId, null);
-        }
-
-        @Override
-        public void onAdClosed() {
-          sendInterstitialEvent(AD_CLOSED, requestId, adUnitId, null);
-        }
       });
-
-      interstitialAdArray.put(requestId, interstitialAd);
     });
   }
 
@@ -133,8 +144,8 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
         interstitialAd.setImmersiveMode(false);
       }
 
-      if (interstitialAd.isLoaded()) {
-        interstitialAd.show();
+      if (interstitialAd != null) {
+        interstitialAd.show(getCurrentActivity());
         promise.resolve(null);
       } else {
         rejectPromiseWithCodeAndMessage(promise, "not-ready", "Interstitial ad attempted to show but was not ready.");
