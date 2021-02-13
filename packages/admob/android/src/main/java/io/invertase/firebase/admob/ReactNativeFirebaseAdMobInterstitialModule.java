@@ -31,6 +31,7 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.ResponseInfo;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
@@ -78,8 +79,7 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-
-      InterstitialAd.load(getApplicationContext(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
+      InterstitialAd.load(getCurrentActivity(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
         @Override
         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
           // The mInterstitialAd reference will be null until
@@ -120,6 +120,8 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
         @Override
         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
           WritableMap errorMap = Arguments.createMap();
+          ResponseInfo info = loadAdError.getResponseInfo();
+
           String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(loadAdError.getCode());
           errorMap.putString("code", codeAndMessage[0]);
           errorMap.putString("message", codeAndMessage[1]);
