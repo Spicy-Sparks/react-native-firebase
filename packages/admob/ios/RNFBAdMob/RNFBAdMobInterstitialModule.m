@@ -74,10 +74,7 @@ RCT_EXPORT_METHOD(interstitialLoad
                            request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                  completionHandler:^(GADInterstitialAd *_Nullable ad, NSError *_Nullable error) {
                    if (error) {
-                       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-                           @"code": @"not-loaded",
-                           @"message": @"Failed to load interstitial ad",
-                       } mutableCopy]];
+                       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
                      return;
                    }
       
