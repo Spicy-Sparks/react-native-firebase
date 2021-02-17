@@ -142,12 +142,13 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
       if (interstitialAd != null) {
 
+        boolean immersiveModeEnabled = false;
         if (showOptions.hasKey("immersiveModeEnabled")) {
-          interstitialAd.setImmersiveMode(showOptions.getBoolean("immersiveModeEnabled"));
-        } else {
-          interstitialAd.setImmersiveMode(false);
+          immersiveModeEnabled = showOptions.getBoolean("immersiveModeEnabled");
         }
 
+        interstitialAd.setImmersiveMode(immersiveModeEnabled);
+        
         interstitialAd.show(getCurrentActivity());
 
         promise.resolve(null);
