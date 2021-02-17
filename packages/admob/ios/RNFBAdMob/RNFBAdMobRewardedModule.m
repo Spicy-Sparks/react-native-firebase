@@ -76,10 +76,7 @@ RCT_EXPORT_METHOD(rewardedLoad
                              request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
                    completionHandler:^(GADRewardedAd *_Nullable ad, NSError *_Nullable error) {
                      if (error) {
-                         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-                             @"code": @"not-loaded",
-                             @"message": @"Failed to load app open ad",
-                         } mutableCopy]];
+                         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
                        return;
                      }
 
