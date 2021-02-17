@@ -127,12 +127,15 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
     getCurrentActivity().runOnUiThread(() -> {
       RewardedAd rewardedAd = rewardedAdArray.get(requestId);
 
-      boolean immersiveModeEnabled = false;
-      if (showOptions.hasKey("immersiveModeEnabled")) {
-        immersiveModeEnabled = showOptions.getBoolean("immersiveModeEnabled");
-      }
-
       if (rewardedAd != null) {
+
+        boolean immersiveModeEnabled = false;
+        if (showOptions.hasKey("immersiveModeEnabled")) {
+          immersiveModeEnabled = showOptions.getBoolean("immersiveModeEnabled");
+        }
+
+        rewardedAd.setImmersiveMode(immersiveModeEnabled);
+
         rewardedAd.show(getCurrentActivity(), new OnUserEarnedRewardListener() {
           @Override
           public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
