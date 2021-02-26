@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(rewardedLoad
 ) {
 
     [GADRewardedAd loadWithAdUnitID:adUnitId
-                             request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
+                             request:[GADRequest request]
                    completionHandler:^(GADRewardedAd *_Nullable ad, NSError *_Nullable error) {
                      if (error) {
                          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
