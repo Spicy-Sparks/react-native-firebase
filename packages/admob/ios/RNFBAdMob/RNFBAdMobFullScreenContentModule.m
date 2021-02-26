@@ -81,7 +81,7 @@ RCT_EXPORT_METHOD(appOpenLoad
 ) {
     
       [GADAppOpenAd loadWithAdUnitID:adUnitId
-                             request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
+                             request:[GADRequest request]
                          orientation:UIInterfaceOrientationPortrait
                    completionHandler:^(GADAppOpenAd *_Nullable ad, NSError *_Nullable error) {
                      if (error) {
