@@ -71,7 +71,7 @@ RCT_EXPORT_METHOD(interstitialLoad
     :(RCTPromiseRejectBlock) reject
 ) {
     [GADInterstitialAd loadWithAdUnitID:adUnitId
-                           request:[RNFBAdMobCommon buildAdRequest:adRequestOptions]
+                           request:[GADRequest request]
                  completionHandler:^(GADInterstitialAd *_Nullable ad, NSError *_Nullable error) {
                    if (error) {
                        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
