@@ -139,7 +139,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
       };
 
     getCurrentActivity().runOnUiThread(() -> {
-      AppOpenAd.load(getCurrentActivity(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+      AppOpenAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     });
   }
 
@@ -176,7 +176,13 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
 
       if (RNFBGADAppOpenAd != null && RNFBGADAppOpenAd._appOpenAd != null && wasLoadTimeLessThanNHoursAgo(RNFBGADAppOpenAd._loadTime, 4)) {
         RNFBGADAppOpenAd._appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
-        RNFBGADAppOpenAd._appOpenAd.show(getCurrentActivity());
+
+        Activity targetActivity = getCurrentActivity();
+
+        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+          targetActivity = getReactApplicationContext().getCurrentActivity();
+
+        RNFBGADAppOpenAd._appOpenAd.show(targetActivity);
         promise.resolve(null);
       } else {
         rejectPromiseWithCodeAndMessage(promise, "not-ready", "AppOpen ad attempted to show but was not ready.");
