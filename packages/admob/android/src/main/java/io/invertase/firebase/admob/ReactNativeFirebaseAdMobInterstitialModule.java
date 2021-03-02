@@ -17,6 +17,7 @@ package io.invertase.firebase.admob;
  *
  */
 
+import android.app.Activity;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -79,7 +80,7 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-      InterstitialAd.load(getCurrentActivity(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
+      InterstitialAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
         @Override
         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
           // The mInterstitialAd reference will be null until
@@ -148,8 +149,13 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
         }
 
         interstitialAd.setImmersiveMode(immersiveModeEnabled);
-        
-        interstitialAd.show(getCurrentActivity());
+
+        Activity targetActivity = getCurrentActivity();
+
+        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+          targetActivity = getReactApplicationContext().getCurrentActivity();
+
+        interstitialAd.show(targetActivity);
 
         promise.resolve(null);
       } else {
