@@ -1,5 +1,6 @@
 package io.invertase.firebase.admob;
 
+import android.app.Activity;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -67,7 +68,7 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-      RewardedAd.load(getCurrentActivity(), adUnitId,
+      RewardedAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId,
         adRequest, new RewardedAdLoadCallback(){
           @Override
           public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
@@ -136,7 +137,12 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
         rewardedAd.setImmersiveMode(immersiveModeEnabled);
 
-        rewardedAd.show(getCurrentActivity(), new OnUserEarnedRewardListener() {
+        Activity targetActivity = getCurrentActivity();
+
+        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+          targetActivity = getReactApplicationContext().getCurrentActivity();
+
+        rewardedAd.show(targetActivity, new OnUserEarnedRewardListener() {
           @Override
           public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
             WritableMap data = Arguments.createMap();
