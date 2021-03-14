@@ -1,12 +1,12 @@
 {
   "_args": [
     [
-      "@react-native-firebase/admob@11.0.0",
+      "@react-native-firebase/admob@11.1.0",
       "/Users/geroa/eSound"
     ]
   ],
-  "_from": "@react-native-firebase/admob@11.0.0",
-  "_id": "@react-native-firebase/admob@11.0.0",
+  "_from": "@react-native-firebase/admob@11.1.0",
+  "_id": "@react-native-firebase/admob@11.1.0",
   "_inBundle": false,
   "_integrity": "sha512-lMvQ0OeqAlJlmfyRFd7fpEcAAG6WlJUwd9UuQIFxW5rGerbu4BXALFVrEZ0eQw5BpHfJtvS68++d6TbhkK2Y5g==",
   "_location": "/@react-native-firebase/admob",
@@ -14,7 +14,7 @@
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "@react-native-firebase/admob@11.0.0",
+    "raw": "@react-native-firebase/admob@11.1.0",
     "name": "@react-native-firebase/admob",
     "escapedName": "@react-native-firebase%2fadmob",
     "scope": "@react-native-firebase",
@@ -26,7 +26,7 @@
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-11.0.0.tgz",
-  "_spec": "11.0.0",
+  "_spec": "11.1.0",
   "_where": "/Users/geroa/eSound",
   "author": {
     "name": "Invertase",
@@ -50,7 +50,7 @@
   "main": "lib/index.js",
   "name": "@react-native-firebase/admob",
   "peerDependencies": {
-    "@react-native-firebase/app": "11.0.0"
+    "@react-native-firebase/app": "11.1.0"
   },
   "publishConfig": {
     "access": "public"
@@ -65,7 +65,7 @@
     "prepare": "yarn run build"
   },
   "types": "lib/index.d.ts",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "react-native": {
     "zlib": "browserify-zlib",
     "console": "console-browserify",
