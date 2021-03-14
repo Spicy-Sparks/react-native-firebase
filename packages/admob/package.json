@@ -18,14 +18,14 @@
     "name": "@react-native-firebase/admob",
     "escapedName": "@react-native-firebase%2fadmob",
     "scope": "@react-native-firebase",
-    "rawSpec": "10.5.1",
+    "rawSpec": "11.1.0",
     "saveSpec": null,
-    "fetchSpec": "10.5.1"
+    "fetchSpec": "11.1.0"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-11.0.0.tgz",
+  "_resolved": "https://registry.npmjs.org/@react-native-firebase/admob/-/admob-11.1.0.tgz",
   "_spec": "11.1.0",
   "_where": "/Users/geroa/eSound",
   "author": {
