@@ -76,6 +76,10 @@ class FirebaseAdMobModule extends FirebaseModule {
 
     return this.native.setRequestConfiguration(config);
   }
+
+  setAdsAudioMuted(adsAudioMuted) {
+    return this.native.setAdsAudioMuted(adsAudioMuted);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/admob';
