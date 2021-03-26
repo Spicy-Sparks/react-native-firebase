@@ -35,7 +35,6 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Admob Methods
 
-
 RCT_EXPORT_METHOD(setRequestConfiguration:
   (NSDictionary *) requestConfiguration
     :(RCTPromiseResolveBlock) resolve
@@ -80,6 +79,22 @@ RCT_EXPORT_METHOD(setRequestConfiguration:
     }
     [GADMobileAds.sharedInstance.requestConfiguration setTestDeviceIdentifiers:devices];
   }
+}
+
+RCT_EXPORT_METHOD(setAdsAudioMuted:
+    (BOOL) adsAudioMuted
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    if(adsAudioMuted){
+        GADMobileAds.sharedInstance.audioVideoManager.audioSessionIsApplicationManaged = YES;
+          GADMobileAds.sharedInstance.applicationMuted = YES;
+    }
+    else{
+        GADMobileAds.sharedInstance.audioVideoManager.audioSessionIsApplicationManaged = NO;
+          GADMobileAds.sharedInstance.applicationMuted = NO;
+    }
+  resolve([NSNull null]);
 }
 
 @end
