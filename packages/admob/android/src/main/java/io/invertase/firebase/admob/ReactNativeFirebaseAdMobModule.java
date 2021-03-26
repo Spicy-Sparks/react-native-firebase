@@ -87,4 +87,10 @@ public class ReactNativeFirebaseAdMobModule extends ReactNativeFirebaseModule {
     MobileAds.setRequestConfiguration(buildRequestConfiguration(requestConfiguration));
     promise.resolve(null);
   }
+
+  @ReactMethod
+  public void setAdsAudioMuted(boolean adsAudioMuted, Promise promise) {
+    MobileAds.setAppMuted(adsAudioMuted);
+    promise.resolve(null);
+  }
 }
