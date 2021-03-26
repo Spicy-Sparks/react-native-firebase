@@ -1217,6 +1217,8 @@ export namespace FirebaseAdMobTypes {
      * @param requestConfiguration An RequestConfiguration interface used on all future AdMob ad requests.
      */
     setRequestConfiguration(requestConfiguration: RequestConfiguration): Promise<void>;
+
+    setAdsAudioMuted(adsAudioMuted: boolean): Promise<void>;
   }
 }
 
