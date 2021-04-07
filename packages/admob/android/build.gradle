@@ -109,13 +109,6 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-ads"
   implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
-  implementation 'com.google.ads.mediation:applovin:+'
-  implementation 'com.google.ads.mediation:facebook:+'
-  implementation 'com.google.ads.mediation:unity:+'
-  implementation 'com.google.ads.mediation:adcolony:4.3.0.0'
-  implementation 'com.google.ads.mediation:tapjoy:+'
-  implementation 'com.google.ads.mediation:mopub:+'
-  implementation 'com.google.ads.mediation:ironsource:+'
 }
 
 ReactNative.shared.applyPackageVersion()
