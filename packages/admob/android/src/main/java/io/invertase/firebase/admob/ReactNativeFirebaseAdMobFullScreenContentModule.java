@@ -18,29 +18,18 @@ package io.invertase.firebase.admob;
  */
 
 import android.app.Activity;
-import android.app.Application;
-import android.os.Bundle;
 import android.util.SparseArray;
 
-import androidx.annotation.NonNull;
-
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.ResponseInfo;
 import com.google.android.gms.ads.appopen.AppOpenAd;
-import com.google.android.gms.internal.ads.zzsm;
-import com.google.android.gms.internal.ads.zzxg;
 
 import java.util.Calendar;
 import java.util.Date;
