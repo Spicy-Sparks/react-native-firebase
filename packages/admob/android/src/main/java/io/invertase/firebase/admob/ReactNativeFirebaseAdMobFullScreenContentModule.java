@@ -18,9 +18,14 @@ package io.invertase.firebase.admob;
  */
 
 import android.app.Activity;
+import android.app.Application;
+import android.os.Bundle;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -59,6 +64,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
   private static final String SERVICE = "AdMobFullScreenContent";
   private static SparseArray<RNFBGADAppOpenAd> appOpenAdArray = new SparseArray<>();
   private AppOpenAd.AppOpenAdLoadCallback loadCallback;
+
 
   private class RNFBGADAppOpenAd {
 
@@ -99,7 +105,8 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
 
   @ReactMethod
   public void appOpenLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
       error.putString("message", "Interstitial ad attempted to load but the current Activity was null.");
@@ -138,18 +145,19 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
 
       };
 
-    getCurrentActivity().runOnUiThread(() -> {
-      AppOpenAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+    currentActivity.runOnUiThread(() -> {
+      AppOpenAd.load(currentActivity, adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     });
   }
 
   @ReactMethod
   public void appOpenShow(int requestId, ReadableMap showOptions, Promise promise) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
       rejectPromiseWithCodeAndMessage(promise, "null-activity", "Interstitial ad attempted to show but the current Activity was null.");
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
+    currentActivity.runOnUiThread(() -> {
       RNFBGADAppOpenAd RNFBGADAppOpenAd = appOpenAdArray.get(requestId);
 
       FullScreenContentCallback fullScreenContentCallback =
@@ -177,12 +185,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
       if (RNFBGADAppOpenAd != null && RNFBGADAppOpenAd._appOpenAd != null && wasLoadTimeLessThanNHoursAgo(RNFBGADAppOpenAd._loadTime, 4)) {
         RNFBGADAppOpenAd._appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
 
-        Activity targetActivity = getCurrentActivity();
-
-        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
-          targetActivity = getReactApplicationContext().getCurrentActivity();
-
-        RNFBGADAppOpenAd._appOpenAd.show(targetActivity);
+        RNFBGADAppOpenAd._appOpenAd.show(currentActivity);
         promise.resolve(null);
       } else {
         rejectPromiseWithCodeAndMessage(promise, "not-ready", "AppOpen ad attempted to show but was not ready.");
