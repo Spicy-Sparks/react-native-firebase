@@ -18,18 +18,29 @@ package io.invertase.firebase.admob;
  */
 
 import android.app.Activity;
+import android.app.Application;
+import android.os.Bundle;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.ResponseInfo;
 import com.google.android.gms.ads.appopen.AppOpenAd;
+import com.google.android.gms.internal.ads.zzsm;
+import com.google.android.gms.internal.ads.zzxg;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +65,20 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
   private static SparseArray<RNFBGADAppOpenAd> appOpenAdArray = new SparseArray<>();
   private AppOpenAd.AppOpenAdLoadCallback loadCallback;
 
+  private static Activity          sCurrentActivity;
+
+  @Nullable
+  private Activity maybeGetCurrentActivity()
+  {
+    // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
+    // To alleviate the issue - we will store as a static reference (WeakReference unfortunately did not suffice)
+    if ( getReactApplicationContext().hasCurrentActivity() )
+    {
+      sCurrentActivity = getReactApplicationContext().getCurrentActivity();
+    }
+
+    return sCurrentActivity;
+  }
 
   private class RNFBGADAppOpenAd {
 
@@ -94,7 +119,7 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
 
   @ReactMethod
   public void appOpenLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = maybeGetCurrentActivity();
     if (currentActivity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
@@ -135,13 +160,19 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
       };
 
     currentActivity.runOnUiThread(() -> {
-      AppOpenAd.load(currentActivity, adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+
+      Activity targetActivity = currentActivity;
+
+      if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+        targetActivity = getReactApplicationContext().getCurrentActivity();
+
+      AppOpenAd.load(targetActivity != null ? targetActivity : getReactApplicationContext(), adUnitId, buildAdRequest(adRequestOptions), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     });
   }
 
   @ReactMethod
   public void appOpenShow(int requestId, ReadableMap showOptions, Promise promise) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = maybeGetCurrentActivity();
     if (currentActivity == null) {
       rejectPromiseWithCodeAndMessage(promise, "null-activity", "Interstitial ad attempted to show but the current Activity was null.");
       return;
@@ -174,7 +205,12 @@ public class ReactNativeFirebaseAdMobFullScreenContentModule extends ReactNative
       if (RNFBGADAppOpenAd != null && RNFBGADAppOpenAd._appOpenAd != null && wasLoadTimeLessThanNHoursAgo(RNFBGADAppOpenAd._loadTime, 4)) {
         RNFBGADAppOpenAd._appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
 
-        RNFBGADAppOpenAd._appOpenAd.show(currentActivity);
+        Activity targetActivity = currentActivity;
+
+        if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+          targetActivity = getReactApplicationContext().getCurrentActivity();
+
+        RNFBGADAppOpenAd._appOpenAd.show(targetActivity);
         promise.resolve(null);
       } else {
         rejectPromiseWithCodeAndMessage(promise, "not-ready", "AppOpen ad attempted to show but was not ready.");
