@@ -40,6 +40,21 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
   private static final String SERVICE = "AdMobRewarded";
   private static SparseArray<RewardedAd> rewardedAdArray = new SparseArray<>();
 
+  private static Activity sCurrentActivity;
+
+  @javax.annotation.Nullable
+  private Activity maybeGetCurrentActivity()
+  {
+    // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
+    // To alleviate the issue - we will store as a static reference (WeakReference unfortunately did not suffice)
+    if ( getReactApplicationContext().hasCurrentActivity() )
+    {
+      sCurrentActivity = getReactApplicationContext().getCurrentActivity();
+    }
+
+    return sCurrentActivity;
+  }
+
   public ReactNativeFirebaseAdMobRewardedModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE);
   }
@@ -57,18 +72,24 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
   @ReactMethod
   public void rewardedLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = maybeGetCurrentActivity();
+    if (currentActivity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
       error.putString("message", "Rewarded ad attempted to load but the current Activity was null.");
       sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
+    currentActivity.runOnUiThread(() -> {
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-      RewardedAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId,
+      Activity targetActivity = currentActivity;
+
+      if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+        targetActivity = getReactApplicationContext().getCurrentActivity();
+
+      RewardedAd.load(targetActivity != null ? targetActivity : getReactApplicationContext(), adUnitId,
         adRequest, new RewardedAdLoadCallback(){
           @Override
           public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
@@ -121,11 +142,12 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
   @ReactMethod
   public void rewardedShow(int requestId, String adUnitId, ReadableMap showOptions, Promise promise) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = maybeGetCurrentActivity();
+    if (currentActivity == null) {
       rejectPromiseWithCodeAndMessage(promise, "null-activity", "Rewarded ad attempted to show but the current Activity was null.");
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
+    currentActivity.runOnUiThread(() -> {
       RewardedAd rewardedAd = rewardedAdArray.get(requestId);
 
       if (rewardedAd != null) {
@@ -137,9 +159,9 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
         rewardedAd.setImmersiveMode(immersiveModeEnabled);
 
-        Activity targetActivity = getCurrentActivity();
+        Activity targetActivity = currentActivity;
 
-        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+        if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
           targetActivity = getReactApplicationContext().getCurrentActivity();
 
         rewardedAd.show(targetActivity, new OnUserEarnedRewardListener() {
