@@ -53,6 +53,21 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
   private static final String SERVICE = "AdMobInterstitial";
   private static SparseArray<InterstitialAd> interstitialAdArray = new SparseArray<>();
 
+  private static Activity sCurrentActivity;
+
+  @Nullable
+  private Activity maybeGetCurrentActivity()
+  {
+    // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
+    // To alleviate the issue - we will store as a static reference (WeakReference unfortunately did not suffice)
+    if ( getReactApplicationContext().hasCurrentActivity() )
+    {
+      sCurrentActivity = getReactApplicationContext().getCurrentActivity();
+    }
+
+    return sCurrentActivity;
+  }
+
   public ReactNativeFirebaseAdMobInterstitialModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE);
   }
@@ -69,18 +84,24 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
   @ReactMethod
   public void interstitialLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = maybeGetCurrentActivity();
+    if (currentActivity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
       error.putString("message", "Interstitial ad attempted to load but the current Activity was null.");
       sendInterstitialEvent(AD_ERROR, requestId, adUnitId, error);
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
+    currentActivity.runOnUiThread(() -> {
 
       AdRequest adRequest = new AdRequest.Builder().build();
 
-      InterstitialAd.load(getCurrentActivity() != null ? getCurrentActivity() : getReactApplicationContext(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
+      Activity targetActivity = currentActivity;
+
+      if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+        targetActivity = getReactApplicationContext().getCurrentActivity();
+
+      InterstitialAd.load(targetActivity != null ? targetActivity : getReactApplicationContext(), adUnitId, adRequest, new InterstitialAdLoadCallback() {
         @Override
         public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
           // The mInterstitialAd reference will be null until
@@ -134,11 +155,12 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
   @ReactMethod
   public void interstitialShow(int requestId, ReadableMap showOptions, Promise promise) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = maybeGetCurrentActivity();
+    if (currentActivity == null) {
       rejectPromiseWithCodeAndMessage(promise, "null-activity", "Interstitial ad attempted to show but the current Activity was null.");
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
+    currentActivity.runOnUiThread(() -> {
       InterstitialAd interstitialAd = interstitialAdArray.get(requestId);
 
       if (interstitialAd != null) {
@@ -150,9 +172,9 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
         interstitialAd.setImmersiveMode(immersiveModeEnabled);
 
-        Activity targetActivity = getCurrentActivity();
+        Activity targetActivity = currentActivity;
 
-        if(targetActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
+        if(currentActivity == null && getReactApplicationContext() != null && getReactApplicationContext().getCurrentActivity() != null)
           targetActivity = getReactApplicationContext().getCurrentActivity();
 
         interstitialAd.show(targetActivity);
