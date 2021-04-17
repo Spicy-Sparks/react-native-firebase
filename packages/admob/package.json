@@ -18,9 +18,9 @@
     "name": "@react-native-firebase/admob",
     "escapedName": "@react-native-firebase%2fadmob",
     "scope": "@react-native-firebase",
-    "rawSpec": "11.2.0",
+    "rawSpec": "11.3.0",
     "saveSpec": null,
-    "fetchSpec": "11.2.0"
+    "fetchSpec": "11.3.0"
   },
   "_requiredBy": [
     "/"
