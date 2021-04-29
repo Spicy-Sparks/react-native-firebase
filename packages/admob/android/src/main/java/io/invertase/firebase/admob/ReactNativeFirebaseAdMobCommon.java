@@ -27,11 +27,15 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -144,11 +148,13 @@ public class ReactNativeFirebaseAdMobCommon {
       for (Object device : devices) {
         String id = (String) device;
 
+        RequestConfiguration configuration;
         if (id.equals("EMULATOR")) {
-          builder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+          configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList(AdRequest.DEVICE_ID_EMULATOR)).build();
         } else {
-          builder.addTestDevice(id);
+          configuration = new RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList(id)).build();
         }
+        MobileAds.setRequestConfiguration(configuration);
       }
     }
 
