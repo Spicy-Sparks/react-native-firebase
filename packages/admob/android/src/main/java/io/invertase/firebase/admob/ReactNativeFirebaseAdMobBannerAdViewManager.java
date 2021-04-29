@@ -31,6 +31,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -160,8 +161,8 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
       }
 
       @Override
-      public void onAdFailedToLoad(int errorCode) {
-        WritableMap payload = ReactNativeFirebaseAdMobCommon.errorCodeToMap(errorCode);
+      public void onAdFailedToLoad(LoadAdError error) {
+        WritableMap payload = ReactNativeFirebaseAdMobCommon.errorCodeToMap(error.getCode());
         sendEvent(reactViewGroup, EVENT_AD_FAILED_TO_LOAD, payload);
       }
 
@@ -173,11 +174,6 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
       @Override
       public void onAdClosed() {
         sendEvent(reactViewGroup, EVENT_AD_CLOSED, null);
-      }
-
-      @Override
-      public void onAdLeftApplication() {
-        sendEvent(reactViewGroup, EVENT_AD_LEFT_APPLICATION, null);
       }
     });
   }
