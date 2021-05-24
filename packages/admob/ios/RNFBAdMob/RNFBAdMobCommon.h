@@ -18,6 +18,7 @@
 
 #import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
+@import GoogleMobileAds;
 
 @interface RNFBAdMobCommon : NSObject
 
