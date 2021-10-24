@@ -50,7 +50,7 @@
   "main": "lib/index.js",
   "name": "@react-native-firebase/admob",
   "peerDependencies": {
-    "@react-native-firebase/app": "12.9.3"
+    "@react-native-firebase/app": "^12.9.3"
   },
   "publishConfig": {
     "access": "public"
